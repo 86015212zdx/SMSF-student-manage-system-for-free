@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>好友列表 - SMSF 在线学习平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- 引入工具函数 -->
+    <script src="/static/OKComputer_企业化网页重设/utils.js"></script>
+    <!-- 引入zt字体文件 -->
+    <link rel="stylesheet" href="/static/zt/fonts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', 'Quattrocento Sans', sans-serif;
+        }
+
+        body {
+            background: #1A202C;
+            color: #E2E8F0;
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏 */
+        nav {
+            background: #2D3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4A5568;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .nav-back {
+            background: #4A5568;
+            color: #E2E8F0;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .nav-back:hover {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #A0AEC0;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* 搜索区域 */
+        .search-section {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #4A5568;
+        }
+
+        .search-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #E2E8F0;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-input-container {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border-radius: 8px;
+            border: 1px solid #4A5568;
+            background: #1A202C;
+            color: #E2E8F0;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #38B2AC;
+            box-shadow: 0 0 0 3px rgba(56, 178, 172, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #A0AEC0;
+        }
+
+        .search-button {
+            background: #38B2AC;
+            color: #1A202C;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-button:hover {
+            background: #4FD1C7;
+            transform: translateY(-2px);
+        }
+
+        /* 好友列表区域 */
+        .friends-section {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #4A5568;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #4A5568;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #E2E8F0;
+        }
+
+        .friends-stats {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            background: #1A202C;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .stat-number {
+            color: #38B2AC;
+            font-weight: 700;
+        }
+
+        /* 好友列表网格 */
+        .friends-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .friend-card {
+            background: #1A202C;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #4A5568;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .friend-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: #38B2AC;
+        }
+
+        .friend-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .friend-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A202C;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .friend-info {
+            flex: 1;
+        }
+
+        .friend-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #E2E8F0;
+            margin-bottom: 0.2rem;
+        }
+
+        .friend-account {
+            font-size: 0.9rem;
+            color: #A0AEC0;
+        }
+
+        .friend-details {
+            margin-bottom: 1rem;
+        }
+
+        .friend-level {
+            display: inline-block;
+            background: rgba(56, 178, 172, 0.2);
+            color: #38B2AC;
+            padding: 0.2rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+
+        .friend-exp {
+            display: inline-block;
+            background: rgba(74, 85, 104, 0.5);
+            color: #A0AEC0;
+            padding: 0.2rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .friend-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 0.6rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .primary-button {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .primary-button:hover {
+            background: #4FD1C7;
+            transform: translateY(-2px);
+        }
+
+        .secondary-button {
+            background: #4A5568;
+            color: #E2E8F0;
+        }
+
+        .secondary-button:hover {
+            background: #718096;
+        }
+
+        .danger-button {
+            background: #E53E3E;
+            color: #FFFFFF;
+        }
+
+        .danger-button:hover {
+            background: #C53030;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #A0AEC0;
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #E2E8F0;
+            margin-bottom: 1rem;
+        }
+
+        /* 加载状态 */
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+            color: #A0AEC0;
+            grid-column: 1 / -1;
+        }
+
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 3px solid #4A5568;
+            border-top: 3px solid #38B2AC;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 1rem;
+            }
+            
+            .friends-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-input-container {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav>
+        <div class="logo-section">
+            <img src="resource_web/logo_64.png" alt="SMSF Logo" class="logo-icon">
+            <div>
+                <div class="logo-text">SMSF 好友中心</div>
+            </div>
+        </div>
+        
+        <button class="nav-back" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+            返回学习中心
+        </button>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">好友列表</h1>
+            <p class="page-subtitle">在这里管理和查找你的好友，一起学习，共同进步</p>
+        </div>
+
+        <!-- 搜索区域 -->
+        <div class="search-section">
+            <div class="search-header">
+                <h2 class="search-title">搜索用户</h2>
+                <div class="search-controls">
+                    <div class="search-input-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" 
+                               class="search-input" 
+                               id="searchInput" 
+                               placeholder="输入用户名或账号搜索..."
+                               onkeyup="handleSearch(event)">
+                    </div>
+                    <button class="search-button" onclick="performSearch()">
+                        <i class="fas fa-search"></i>
+                        搜索
+                    </button>
+                </div>
+            </div>
+            
+            <div id="searchResults" class="friends-grid" style="display: none;">
+                <!-- 搜索结果将在这里显示 -->
+            </div>
+        </div>
+
+        <!-- 好友列表区域 -->
+        <div class="friends-section">
+            <div class="section-header">
+                <h2 class="section-title">我的好友</h2>
+                <div class="friends-stats">
+                    <div class="stat-item">
+                        总数: <span class="stat-number" id="totalFriends">0</span>
+                    </div>
+                    <div class="stat-item">
+                        在线: <span class="stat-number" id="onlineFriends">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="friendsList" class="friends-grid">
+                <!-- 好友列表将在这里显示 -->
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>正在加载好友列表...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 当前用户信息
+        let currentUser = null;
+        let friendsData = [];
+        let allUsers = []; // 用于搜索的所有用户数据
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserInfo();
+            loadFriendsList();
+        });
+
+        // 加载用户信息
+        function loadUserInfo() {
+            fetch('/api/current_user', {
+                method: 'GET',
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.user) {
+                    currentUser = data.user;
+                    console.log('当前用户:', currentUser);
+                } else {
+                    console.error('获取用户信息失败:', data.message);
+                    // 使用默认用户信息
+                    currentUser = {
+                        account: 'default_user',
+                        name: '默认用户'
+                    };
+                }
+            })
+            .catch(error => {
+                console.error('获取用户信息失败:', error);
+                currentUser = {
+                    account: 'default_user',
+                    name: '默认用户'
+                };
+            });
+        }
+
+        // 加载好友列表
+        function loadFriendsList() {
+            // 模拟API调用
+            setTimeout(() => {
+                // 模拟好友数据
+                friendsData = [
+                    {
+                        id: 1,
+                        name: '李小明',
+                        account: 'lixiaoming',
+                        level: 15,
+                        exp: 2850,
+                        online: true,
+                        avatar: '李'
+                    },
+                    {
+                        id: 2,
+                        name: '王小红',
+                        account: 'wangxiaohong',
+                        level: 12,
+                        exp: 1980,
+                        online: false,
+                        avatar: '王'
+                    },
+                    {
+                        id: 3,
+                        name: '张小刚',
+                        account: 'zhangxiaogang',
+                        level: 18,
+                        exp: 3200,
+                        online: true,
+                        avatar: '张'
+                    },
+                    {
+                        id: 4,
+                        name: '刘小美',
+                        account: 'liuxiaomei',
+                        level: 9,
+                        exp: 890,
+                        online: false,
+                        avatar: '刘'
+                    }
+                ];
+                
+                renderFriendsList();
+                updateStats();
+            }, 1000);
+        }
+
+        // 渲染好友列表
+        function renderFriendsList() {
+            const container = document.getElementById('friendsList');
+            
+            if (friendsData.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">👥</div>
+                        <h3 class="empty-title">暂无好友</h3>
+                        <p>快去搜索添加好友吧！</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = friendsData.map(friend => `
+                <div class="friend-card" data-friend-id="${friend.id}">
+                    <div class="friend-header">
+                        <div class="friend-avatar" style="background: ${getRandomGradient()}">
+                            ${friend.avatar}
+                        </div>
+                        <div class="friend-info">
+                            <div class="friend-name">${friend.name}</div>
+                            <div class="friend-account">@${friend.account}</div>
+                        </div>
+                        ${friend.online ? '<div class="online-indicator" style="color: #48BB78; font-size: 0.8rem;">● 在线</div>' : ''}
+                    </div>
+                    
+                    <div class="friend-details">
+                        <span class="friend-level">Lv.${friend.level}</span>
+                        <span class="friend-exp">${friend.exp.toLocaleString()} EXP</span>
+                    </div>
+                    
+                    <div class="friend-actions">
+                        <button class="action-button primary-button" onclick="sendMessage(${friend.id})">
+                            <i class="fas fa-comment"></i>
+                            发消息
+                        </button>
+                        <button class="action-button secondary-button" onclick="viewProfile(${friend.id})">
+                            <i class="fas fa-user"></i>
+                            查看资料
+                        </button>
+                        <button class="action-button danger-button" onclick="removeFriend(${friend.id})">
+                            <i class="fas fa-user-minus"></i>
+                            删除
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            document.getElementById('totalFriends').textContent = friendsData.length;
+            const onlineCount = friendsData.filter(friend => friend.online).length;
+            document.getElementById('onlineFriends').textContent = onlineCount;
+        }
+
+        // 搜索处理
+        function handleSearch(event) {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        }
+
+        // 执行搜索
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            const resultsContainer = document.getElementById('searchResults');
+            
+            if (!searchTerm) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+            
+            // 模拟搜索结果
+            setTimeout(() => {
+                const mockUsers = [
+                    {
+                        id: 101,
+                        name: '陈小华',
+                        account: 'chenxiaohua',
+                        level: 14,
+                        exp: 2450,
+                        online: true,
+                        avatar: '陈'
+                    },
+                    {
+                        id: 102,
+                        name: '赵小丽',
+                        account: 'zhaoxiaoli',
+                        level: 11,
+                        exp: 1680,
+                        online: false,
+                        avatar: '赵'
+                    }
+                ];
+                
+                renderSearchResults(mockUsers);
+                resultsContainer.style.display = 'grid';
+            }, 500);
+        }
+
+        // 渲染搜索结果
+        function renderSearchResults(users) {
+            const container = document.getElementById('searchResults');
+            
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <h3 class="empty-title">未找到用户</h3>
+                        <p>请尝试其他关键词</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = users.map(user => `
+                <div class="friend-card" data-user-id="${user.id}">
+                    <div class="friend-header">
+                        <div class="friend-avatar" style="background: ${getRandomGradient()}">
+                            ${user.avatar}
+                        </div>
+                        <div class="friend-info">
+                            <div class="friend-name">${user.name}</div>
+                            <div class="friend-account">@${user.account}</div>
+                        </div>
+                        ${user.online ? '<div style="color: #48BB78; font-size: 0.8rem;">● 在线</div>' : ''}
+                    </div>
+                    
+                    <div class="friend-details">
+                        <span class="friend-level">Lv.${user.level}</span>
+                        <span class="friend-exp">${user.exp.toLocaleString()} EXP</span>
+                    </div>
+                    
+                    <div class="friend-actions">
+                        <button class="action-button primary-button" onclick="addFriend(${user.id})">
+                            <i class="fas fa-user-plus"></i>
+                            添加好友
+                        </button>
+                        <button class="action-button secondary-button" onclick="viewProfile(${user.id})">
+                            <i class="fas fa-user"></i>
+                            查看资料
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 获取随机渐变色
+        function getRandomGradient() {
+            const gradients = [
+                'linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%)',
+                'linear-gradient(135deg, #4299E1 0%, #63B3ED 100%)',
+                'linear-gradient(135deg, #48BB78 0%, #68D391 100%)',
+                'linear-gradient(135deg, #ED8936 0%, #F6AD55 100%)',
+                'linear-gradient(135deg, #9F7AEA 0%, #B794F6 100%)'
+            ];
+            return gradients[Math.floor(Math.random() * gradients.length)];
+        }
+
+        // 添加好友
+        function addFriend(userId) {
+            alert(`已发送好友申请给用户 ID: ${userId}`);
+            // 这里应该调用实际的API
+        }
+
+        // 发送消息
+        function sendMessage(friendId) {
+            alert(`正在与好友 ID: ${friendId} 聊天`);
+            // 这里应该跳转到聊天页面
+        }
+
+        // 查看资料
+        function viewProfile(userId) {
+            alert(`查看用户 ID: ${userId} 的资料`);
+            // 这里应该跳转到用户资料页面
+        }
+
+        // 删除好友
+        function removeFriend(friendId) {
+            if (confirm('确定要删除这位好友吗？')) {
+                friendsData = friendsData.filter(friend => friend.id !== friendId);
+                renderFriendsList();
+                updateStats();
+                showSuccessMessage('好友删除成功');
+            }
+        }
+
+        // 显示成功消息
+        function showSuccessMessage(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #48BB78;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+                z-index: 1000;
+                font-weight: 500;
+                animation: slideIn 0.3s ease;
+            `;
+            toast.innerHTML = `
+                <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+                ${message}
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // 返回学习中心
+        function goBack() {
+            window.location.href = '/static/OKComputer_企业化网页重设/student_learning.html';
+        }
+
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

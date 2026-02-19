@@ -1,0 +1,697 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人主页 - SMSF 在线学习平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- 引入工具函数 -->
+    <script src="/static/OKComputer_企业化网页重设/utils.js"></script>
+    <!-- 引入zt字体文件 -->
+    <link rel="stylesheet" href="/static/zt/fonts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', 'Quattrocento Sans', sans-serif;
+        }
+
+        body {
+            background: #1A202C;
+            color: #E2E8F0;
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏 */
+        nav {
+            background: #2D3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4A5568;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .nav-back {
+            background: #4A5568;
+            color: #E2E8F0;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .nav-back:hover {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #A0AEC0;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* 个人资料卡片 */
+        .profile-card {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #4A5568;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .profile-avatar-container {
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A202C;
+            font-weight: 700;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .avatar-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 36px;
+            height: 36px;
+            background: #38B2AC;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 3px solid #2D3748;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-edit:hover {
+            background: #4FD1C7;
+            transform: scale(1.1);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #E2E8F0;
+            margin-bottom: 0.5rem;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .profile-account {
+            font-size: 1.1rem;
+            color: #A0AEC0;
+            margin-bottom: 1rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #38B2AC;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #A0AEC0;
+        }
+
+        /* 内容区域网格 */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-card {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #4A5568;
+            transition: all 0.3s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: #38B2AC;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #4A5568;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: #38B2AC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A202C;
+            font-size: 1.2rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #E2E8F0;
+        }
+
+        /* 学习统计 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-item {
+            background: #1A202C;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #4A5568;
+        }
+
+        .stat-item i {
+            font-size: 1.5rem;
+            color: #38B2AC;
+            margin-bottom: 0.5rem;
+        }
+
+
+
+        /* 设置选项 */
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: #1A202C;
+            border-radius: 12px;
+            border: 1px solid #4A5568;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .setting-item:hover {
+            background: #4A5568;
+            transform: translateX(5px);
+        }
+
+        .setting-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .setting-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: rgba(56, 178, 172, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #38B2AC;
+            font-size: 1.1rem;
+        }
+
+        .setting-text h3 {
+            font-size: 1rem;
+            color: #E2E8F0;
+            margin-bottom: 0.2rem;
+        }
+
+        .setting-text p {
+            font-size: 0.85rem;
+            color: #A0AEC0;
+        }
+
+        .setting-action {
+            color: #38B2AC;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 1rem;
+            }
+            
+            .profile-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-stats {
+                justify-content: center;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav>
+        <div class="logo-section">
+            <img src="resource_web/logo_64.png" alt="SMSF Logo" class="logo-icon">
+            <div>
+                <div class="logo-text">SMSF 个人中心</div>
+            </div>
+        </div>
+        
+        <button class="nav-back" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+            返回学习中心
+        </button>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">个人主页</h1>
+            <p class="page-subtitle">查看和管理您的个人信息、学习进度和系统设置</p>
+        </div>
+
+        <!-- 个人资料卡片 -->
+        <div class="profile-card">
+            <div class="profile-avatar-container">
+                <div class="profile-avatar" id="profileAvatar">张</div>
+                <div class="avatar-edit" onclick="changeAvatar()">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+            
+            <div class="profile-info">
+                <h2 class="profile-name" id="profileName">张同学</h2>
+                <p class="profile-account" id="profileAccount">@zhangtongxue</p>
+                
+                <div class="profile-stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="userLevel">15</div>
+                        <div class="stat-label">当前等级</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="userExp">1,250</div>
+                        <div class="stat-label">经验值</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="studyDays">45</div>
+                        <div class="stat-label">学习天数</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="resourcesCount">28</div>
+                        <div class="stat-label">学习资源</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内容区域网格 -->
+        <div class="content-grid">
+            <!-- 学习统计 -->
+            <div class="content-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="card-title">学习统计</h3>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <i class="fas fa-book"></i>
+                        <div class="stat-value" id="booksRead">12</div>
+                        <div class="stat-label">已读书籍</div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-video"></i>
+                        <div class="stat-value" id="videosWatched">24</div>
+                        <div class="stat-label">观看视频</div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-tasks"></i>
+                        <div class="stat-value" id="exercisesDone">89</div>
+                        <div class="stat-label">完成练习</div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-clock"></i>
+                        <div class="stat-value" id="studyHours">67</div>
+                        <div class="stat-label">学习时长(小时)</div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- 个人设置 -->
+            <div class="content-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h3 class="card-title">个人设置</h3>
+                </div>
+                
+                <div class="settings-list">
+                    <div class="setting-item" onclick="editProfile()">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-user-edit"></i>
+                            </div>
+                            <div class="setting-text">
+                                <h3>编辑资料</h3>
+                                <p>修改个人信息和头像</p>
+                            </div>
+                        </div>
+                        <div class="setting-action">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" onclick="changePassword()">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="setting-text">
+                                <h3>修改密码</h3>
+                                <p>更新账户登录密码</p>
+                            </div>
+                        </div>
+                        <div class="setting-action">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" onclick="notificationSettings()">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="setting-text">
+                                <h3>通知设置</h3>
+                                <p>管理消息提醒偏好</p>
+                            </div>
+                        </div>
+                        <div class="setting-action">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" onclick="privacySettings()">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="setting-text">
+                                <h3>隐私设置</h3>
+                                <p>控制个人信息可见性</p>
+                            </div>
+                        </div>
+                        <div class="setting-action">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 学习成就 -->
+            <div class="content-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3 class="card-title">学习成就</h3>
+                </div>
+                
+                <div class="activity-list" id="achievementList">
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: rgba(236, 72, 153, 0.2); color: #EC4899;">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">连续学习7天</div>
+                            <div class="activity-time">2026-02-10 获得</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8;">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">英语达人</div>
+                            <div class="activity-time">2026-02-05 获得</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: rgba(132, 204, 22, 0.2); color: #84CC16;">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">满分学霸</div>
+                            <div class="activity-time">2026-01-28 获得</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 当前用户信息
+        let currentUser = null;
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserInfo();
+            loadProfileData();
+        });
+
+        // 加载用户信息
+        function loadUserInfo() {
+            fetch('/api/current_user', {
+                method: 'GET',
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.user) {
+                    currentUser = data.user;
+                    console.log('当前用户:', currentUser);
+                    updateUserDisplay();
+                } else {
+                    console.error('获取用户信息失败:', data.message);
+                    // 使用默认用户信息
+                    currentUser = {
+                        account: 'default_user',
+                        name: '默认用户',
+                        level: 1,
+                        exp: 0
+                    };
+                    updateUserDisplay();
+                }
+            })
+            .catch(error => {
+                console.error('获取用户信息失败:', error);
+                currentUser = {
+                    account: 'default_user',
+                    name: '默认用户',
+                    level: 1,
+                    exp: 0
+                };
+                updateUserDisplay();
+            });
+        }
+
+        // 更新用户显示信息
+        function updateUserDisplay() {
+            if (!currentUser) return;
+            
+            // 更新头像和基本信息
+            const avatarElement = document.getElementById('profileAvatar');
+            const nameElement = document.getElementById('profileName');
+            const accountElement = document.getElementById('profileAccount');
+            const levelElement = document.getElementById('userLevel');
+            const expElement = document.getElementById('userExp');
+            
+            if (avatarElement) {
+                avatarElement.textContent = currentUser.name ? currentUser.name.charAt(0) : '默';
+            }
+            
+            if (nameElement) {
+                nameElement.textContent = currentUser.name || '默认用户';
+            }
+            
+            if (accountElement) {
+                accountElement.textContent = '@' + (currentUser.account || 'default_user');
+            }
+            
+            if (levelElement) {
+                levelElement.textContent = currentUser.level || 1;
+            }
+            
+            if (expElement) {
+                expElement.textContent = (currentUser.exp || 0).toLocaleString();
+            }
+        }
+
+        // 加载个人资料数据
+        function loadProfileData() {
+            // 模拟API调用
+            setTimeout(() => {
+                // 模拟统计数据
+                document.getElementById('studyDays').textContent = '45';
+                document.getElementById('resourcesCount').textContent = '28';
+                document.getElementById('booksRead').textContent = '12';
+                document.getElementById('videosWatched').textContent = '24';
+                document.getElementById('exercisesDone').textContent = '89';
+                document.getElementById('studyHours').textContent = '67';
+            }, 500);
+        }
+
+        // 加载活动记录
+
+
+        // 修改头像
+        function changeAvatar() {
+            alert('头像修改功能开发中...');
+            // 这里可以实现文件上传或头像选择功能
+        }
+
+        // 编辑资料
+        function editProfile() {
+            alert('资料编辑功能开发中...');
+            // 这里可以打开编辑资料的模态框
+        }
+
+        // 修改密码
+        function changePassword() {
+            alert('密码修改功能开发中...');
+            // 这里可以打开修改密码的表单
+        }
+
+        // 通知设置
+        function notificationSettings() {
+            alert('通知设置功能开发中...');
+            // 这里可以打开通知设置页面
+        }
+
+        // 隐私设置
+        function privacySettings() {
+            alert('隐私设置功能开发中...');
+            // 这里可以打开隐私设置页面
+        }
+
+        // 返回学习中心
+        function goBack() {
+            window.location.href = '/static/OKComputer_企业化网页重设/student_learning.html';
+        }
+    </script>
+</body>
+</html>

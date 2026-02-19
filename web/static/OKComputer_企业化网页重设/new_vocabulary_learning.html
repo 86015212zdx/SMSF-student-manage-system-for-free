@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能生词学习 - SMSF 英语学习平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="/static/OKComputer_企业化网页重设/utils.js"></script>
+    <link rel="stylesheet" href="/static/zt/fonts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', 'Quattrocento Sans', sans-serif;
+        }
+
+        body {
+            background: #1A202C;
+            color: #E2E8F0;
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏 */
+        nav {
+            background: #2D3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4A5568;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .nav-back {
+            background: #4A5568;
+            color: #A0AEC0;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-back:hover {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #E2E8F0;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A202C;
+            font-weight: 700;
+        }
+
+        /* 主要内容区域 */
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #A0AEC0;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* 学习模式指示器 */
+        .mode-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .mode-item {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            background: #2D3748;
+            border: 2px solid #4A5568;
+            color: #A0AEC0;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .mode-item.active {
+            background: #38B2AC;
+            border-color: #38B2AC;
+            color: #1A202C;
+            transform: scale(1.05);
+        }
+
+        .mode-item.completed {
+            background: #48BB78;
+            border-color: #48BB78;
+            color: #1A202C;
+        }
+
+        /* 学习卡片容器 */
+        .learning-container {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid #4A5568;
+        }
+
+        .round-info {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(56, 178, 172, 0.1);
+            border-radius: 8px;
+            border: 1px solid #38B2AC;
+        }
+
+        .round-info h3 {
+            color: #38B2AC;
+            margin-bottom: 0.5rem;
+        }
+
+        .round-info p {
+            color: #A0AEC0;
+        }
+
+        /* 单词卡片样式 */
+        .word-card {
+            background: #1A202C;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border: 1px solid #4A5568;
+        }
+
+        /* 模式0：认知模式 */
+        .mode-0-card .word-display {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #38B2AC;
+            margin-bottom: 1rem;
+            font-family: 'Academica Book', sans-serif;
+        }
+
+        .mode-0-card .phonetic {
+            font-size: 1.2rem;
+            color: #A0AEC0;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .mode-0-card .definition {
+            font-size: 1.1rem;
+            color: #E2E8F0;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            background: rgba(56, 178, 172, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .mode-0-card .tag {
+            display: inline-block;
+            background: rgba(72, 187, 120, 0.2);
+            color: #48BB78;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 0.5rem;
+        }
+
+        /* 模式1：选择模式 */
+        .mode-1-card .word-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #38B2AC;
+            margin-bottom: 1.5rem;
+            font-family: 'Academica Book', sans-serif;
+        }
+
+        .mode-1-card .phonetic {
+            font-size: 1.1rem;
+            color: #A0AEC0;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .mode-1-card .question {
+            font-size: 1.2rem;
+            color: #E2E8F0;
+            margin-bottom: 1.5rem;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .option-button {
+            background: #4A5568;
+            color: #E2E8F0;
+            border: 2px solid #4A5568;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .option-button:hover {
+            background: #38B2AC;
+            border-color: #38B2AC;
+            color: #1A202C;
+            transform: translateY(-2px);
+        }
+
+        .option-button.selected {
+            background: #38B2AC;
+            border-color: #38B2AC;
+            color: #1A202C;
+        }
+
+        .option-button.correct {
+            background: #48BB78;
+            border-color: #48BB78;
+            color: #1A202C;
+        }
+
+        .option-button.incorrect {
+            background: #E53E3E;
+            border-color: #E53E3E;
+            color: #FFFFFF;
+        }
+
+        /* 模式2：拼写模式 */
+        .mode-2-card .definition {
+            font-size: 1.3rem;
+            color: #E2E8F0;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            background: rgba(56, 178, 172, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .mode-2-card .question {
+            font-size: 1.2rem;
+            color: #E2E8F0;
+            margin-bottom: 1.5rem;
+        }
+
+        /* 控制按钮 */
+        .word-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .control-button {
+            background: #4A5568;
+            color: #E2E8F0;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .control-button:hover {
+            background: #38B2AC;
+            color: #1A202C;
+            transform: translateY(-2px);
+        }
+
+        .control-button.primary {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .control-button.primary:hover {
+            background: #4FD1C7;
+        }
+
+        .control-button.success {
+            background: #48BB78;
+            color: #1A202C;
+        }
+
+        .control-button.danger {
+            background: #E53E3E;
+            color: #FFFFFF;
+        }
+
+        /* 进度条样式 */
+        .progress-container {
+            margin: 2rem 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #A0AEC0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #4A5568;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38B2AC 0%, #4FD1C7 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* 结果反馈 */
+        .feedback-message {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .feedback-success {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48BB78;
+            border: 1px solid #48BB78;
+        }
+
+        .feedback-error {
+            background: rgba(229, 62, 62, 0.2);
+            color: #E53E3E;
+            border: 1px solid #E53E3E;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 0 1rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .mode-indicator {
+                flex-wrap: wrap;
+            }
+            
+            .mode-item {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .word-display {
+                font-size: 2rem !important;
+            }
+            
+            .word-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-button {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .logo-text {
+                font-size: 1.5rem;
+            }
+            
+            .page-title {
+                font-size: 1.8rem;
+            }
+            
+            .word-display {
+                font-size: 1.8rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav>
+        <div class="logo-section">
+            <img src="resource_web/logo_64.png" alt="SMSF Logo" class="logo-icon">
+            <div class="logo-text">智能生词学习</div>
+        </div>
+        
+        <button class="nav-back" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+            返回单词训练中心
+        </button>
+        
+        <div class="user-info">
+            <div class="user-name" id="userName">张同学</div>
+            <div class="user-avatar" id="userAvatar">张</div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">智能生词学习</h1>
+            <p class="page-subtitle">采用科学的三阶段学习法，循序渐进掌握生词本中的每一个单词</p>
+        </div>
+
+        <!-- 学习模式指示器 -->
+        <div class="mode-indicator">
+            <div class="mode-item active" id="mode0Indicator">
+                <i class="fas fa-book-open"></i>
+                <span>认知模式</span>
+            </div>
+            <div class="mode-item" id="mode1Indicator">
+                <i class="fas fa-list"></i>
+                <span>选择模式</span>
+            </div>
+            <div class="mode-item" id="mode2Indicator">
+                <i class="fas fa-keyboard"></i>
+                <span>拼写模式</span>
+            </div>
+        </div>
+
+        <!-- 学习容器 -->
+        <div class="learning-container">
+            <div class="round-info" id="roundInfo">
+                <h3>第 1 轮学习</h3>
+                <p>共 15 个单词，每轮 5 个单词</p>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>学习进度</span>
+                    <span id="progressText">1/15</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- 模式0：认知模式卡片 -->
+            <div class="word-card mode-0-card" id="mode0Card">
+                <div class="word-display" id="mode0Word">Loading...</div>
+                <div class="phonetic" id="mode0Phonetic">加载中...</div>
+                <div class="definition" id="mode0Definition">正在获取单词信息...</div>
+                <div id="mode0Tags"></div>
+                
+                <div class="word-controls">
+                    <button class="control-button" onclick="playPronunciation(0)">
+                        <i class="fas fa-volume-up"></i>
+                        发音
+                    </button>
+                    <button class="control-button" onclick="showHint(0)">
+                        <i class="fas fa-lightbulb"></i>
+                        提示
+                    </button>
+                    <button class="control-button primary" onclick="nextMode0Word()">
+                        <i class="fas fa-arrow-right"></i>
+                        下一个
+                    </button>
+                    <button class="control-button success" onclick="markAsMastered()">
+                        <i class="fas fa-check"></i>
+                        已掌握
+                    </button>
+                </div>
+            </div>
+
+            <!-- 模式1：选择模式卡片 -->
+            <div class="word-card mode-1-card" id="mode1Card" style="display: none;">
+                <div class="word-display" id="mode1Word">Loading...</div>
+                <div class="phonetic" id="mode1Phonetic">加载中...</div>
+                <div class="question">请选择正确的中文释义：</div>
+                
+                <div class="options-container" id="mode1Options">
+                    <!-- 选项将通过JavaScript动态生成 -->
+                </div>
+                
+                <div class="word-controls">
+                    <button class="control-button primary" onclick="submitMode1Answer()" id="mode1SubmitBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        提交答案
+                    </button>
+                    <button class="control-button" onclick="nextMode1Word()" id="mode1NextBtn" style="display: none;">
+                        <i class="fas fa-arrow-right"></i>
+                        下一题
+                    </button>
+                </div>
+            </div>
+
+            <!-- 模式2：拼写模式卡片 -->
+            <div class="word-card mode-2-card" id="mode2Card" style="display: none;">
+                <div class="definition" id="mode2Definition">加载中...</div>
+                <div class="question">请选择正确的英文拼写：</div>
+                
+                <div class="options-container" id="mode2Options">
+                    <!-- 选项将通过JavaScript动态生成 -->
+                </div>
+                
+                <div class="word-controls">
+                    <button class="control-button primary" onclick="submitMode2Answer()" id="mode2SubmitBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        提交答案
+                    </button>
+                    <button class="control-button" onclick="nextMode2Word()" id="mode2NextBtn" style="display: none;">
+                        <i class="fas fa-arrow-right"></i>
+                        下一题
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentUser = null;
+        let wordList = []; // 原始单词列表
+        let learningQueue = []; // 学习队列 [{word: 单词对象, mode: 模式}]
+        let completedQueue = []; // 已完成队列 [{word: 单词对象, mode: 3}]
+        let currentQueueIndex = 0; // 当前队列索引
+        let modeStatus = {}; // 存储每个单词的学习模式状态 {id: 模式}
+        let selectedOption = null; // 当前选中的选项
+        let pendingUpdates = []; // 待更新的模式状态 [{wordId, newMode}]
+        let currentMode = 0; // 当前学习模式
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            loadLearningData();
+        });
+
+        // 加载用户数据
+        async function loadUserData() {
+            try {
+                const response = await fetch('/api/student-info');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const studentData = result.student;
+                    currentUser = {
+                        name: studentData.name,
+                        account: studentData.account
+                    };
+                    updateUserDisplay();
+                }
+            } catch (error) {
+                console.error('加载用户数据失败:', error);
+                // 使用默认数据
+                currentUser = {
+                    name: '张同学',
+                    account: 'default_user'
+                };
+                updateUserDisplay();
+            }
+        }
+
+        // 更新用户显示
+        function updateUserDisplay() {
+            if (!currentUser) return;
+            
+            const userNameElement = document.getElementById('userName');
+            const userAvatarElement = document.getElementById('userAvatar');
+            
+            if (userNameElement) {
+                userNameElement.textContent = currentUser.name;
+            }
+            
+            if (userAvatarElement) {
+                userAvatarElement.textContent = currentUser.name.charAt(0);
+            }
+        }
+
+        // 加载学习数据
+        async function loadLearningData() {
+            try {
+                // 并行加载单词数据和模式状态
+                const [wordsResponse, modeResponse] = await Promise.all([
+                    fetch('/api/vocabulary/new-words'),
+                    fetch('/api/vocabulary/get-mode-status')
+                ]);
+                
+                const wordsResult = await wordsResponse.json();
+                const modeResult = await modeResponse.json();
+                
+                if (wordsResult.success) {
+                    wordList = wordsResult.words || [];
+                    
+                    if (wordList.length === 0) {
+                        alert('您的生词本为空，请先添加一些单词！');
+                        goBack();
+                        return;
+                    }
+                    
+                    // 加载模式状态
+                    if (modeResult.success) {
+                        modeStatus = modeResult.mode_status || {};
+                    } else {
+                        // 如果没有模式状态，初始化为0
+                        wordList.forEach(word => {
+                            modeStatus[word.id] = 0;
+                        });
+                    }
+                    
+                    console.log('📊 单词数据加载完成:', wordList.length, '个单词');
+                    console.log('📊 模式状态:', modeStatus);
+                    
+                    startLearning();
+                } else {
+                    alert('加载生词数据失败：' + wordsResult.message);
+                }
+            } catch (error) {
+                console.error('加载学习数据失败:', error);
+                alert('加载数据失败，请稍后重试');
+            }
+        }
+
+        // 开始学习 - 创建学习队列
+        function startLearning() {
+            console.log('🚀 开始学习，构建学习队列');
+            console.log('📚 原始单词数:', wordList.length);
+            console.log('📊 模式状态:', modeStatus);
+            
+            // 初始化待更新队列
+            pendingUpdates = [];
+            
+            // 构建学习队列 - 按模式0,1,2顺序
+            learningQueue = [];
+            currentQueueIndex = 0;
+            
+            // 按模式分组单词
+            const wordsByMode = {0: [], 1: [], 2: []};
+            
+            wordList.forEach(word => {
+                const currentMode = modeStatus[word.id] || 0;
+                if (currentMode < 3) { // 只添加未完全掌握的单词
+                    wordsByMode[currentMode].push(word);
+                }
+            });
+            
+            console.log('📋 按模式分组:', {
+                mode0: wordsByMode[0].length,
+                mode1: wordsByMode[1].length, 
+                mode2: wordsByMode[2].length
+            });
+            
+            // 按模式0→1→2顺序添加到队列
+            [0, 1, 2].forEach(mode => {
+                wordsByMode[mode].forEach(word => {
+                    learningQueue.push({
+                        word: word,
+                        mode: mode
+                    });
+                });
+            });
+            
+            console.log('🎯 学习队列构建完成，共', learningQueue.length, '个学习项');
+            console.log('📋 队列详情:', learningQueue.map(item => 
+                `${item.word.word}(模式${item.mode})`
+            ));
+            
+            if (learningQueue.length === 0) {
+                alert('🎉 恭喜！所有单词都已完全掌握！');
+                finishLearning();
+                return;
+            }
+            
+            // 显示第一个单词
+            updateProgress();
+            showCurrentModeCard();
+            displayCurrentWord();
+        }
+
+        // 更新进度条
+        function updateProgress() {
+            if (learningQueue.length === 0) return;
+                    
+            const totalItems = learningQueue.length;
+            const progress = ((currentQueueIndex + 1) / totalItems) * 100;
+                    
+            document.getElementById('progressText').textContent = `${currentQueueIndex + 1}/${totalItems}`;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+                
+        // 更新学习信息显示
+        function updateLearningInfo() {
+            const infoElement = document.getElementById('roundInfo');
+            if (infoElement) {
+                infoElement.innerHTML = `
+                    <h3>智能学习模式</h3>
+                    <p>队列进度: ${currentQueueIndex + 1}/${learningQueue.length}</p>
+                    <p>剩余学习项: ${learningQueue.length - currentQueueIndex}</p>
+                `;
+            }
+        }
+
+        // 显示当前模式卡片
+        function showCurrentModeCard() {
+            if (learningQueue.length === 0 || currentQueueIndex >= learningQueue.length) return;
+            
+            const currentItem = learningQueue[currentQueueIndex];
+            currentMode = currentItem.mode;
+            
+            // 隐藏所有卡片
+            document.getElementById('mode0Card').style.display = 'none';
+            document.getElementById('mode1Card').style.display = 'none';
+            document.getElementById('mode2Card').style.display = 'none';
+            
+            // 移除所有模式指示器的激活状态
+            document.querySelectorAll('.mode-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 显示对应模式的卡片和指示器
+            switch(currentMode) {
+                case 0:
+                    document.getElementById('mode0Card').style.display = 'block';
+                    document.getElementById('mode0Indicator').classList.add('active');
+                    break;
+                case 1:
+                    document.getElementById('mode1Card').style.display = 'block';
+                    document.getElementById('mode1Indicator').classList.add('active');
+                    break;
+                case 2:
+                    document.getElementById('mode2Card').style.display = 'block';
+                    document.getElementById('mode2Indicator').classList.add('active');
+                    break;
+            }
+            
+            // 更新学习信息显示
+            updateLearningInfo();
+        }
+
+        // 显示当前单词
+        function displayCurrentWord() {
+            if (learningQueue.length === 0 || currentQueueIndex >= learningQueue.length) return;
+            
+            const currentItem = learningQueue[currentQueueIndex];
+            const word = currentItem.word;
+            const mode = currentItem.mode;
+            
+            if (!word) return;
+            
+            switch(mode) {
+                case 0: // 认知模式
+                    document.getElementById('mode0Word').textContent = word.word;
+                    document.getElementById('mode0Phonetic').textContent = word.phonetic || '暂无音标';
+                    document.getElementById('mode0Definition').textContent = word.translation || '暂无释义';
+                    
+                    // 显示标签
+                    const tagsContainer = document.getElementById('mode0Tags');
+                    if (word.tag) {
+                        const tags = word.tag.split(' ');
+                        tagsContainer.innerHTML = tags.map(tag => 
+                            `<span class="tag">${tag}</span>`
+                        ).join('');
+                    } else {
+                        tagsContainer.innerHTML = '';
+                    }
+                    break;
+                    
+                case 1: // 选择模式
+                    document.getElementById('mode1Word').textContent = word.word;
+                    document.getElementById('mode1Phonetic').textContent = word.phonetic || '暂无音标';
+                    generateMode1Options(word);
+                    break;
+                    
+                case 2: // 拼写模式
+                    document.getElementById('mode2Definition').textContent = word.translation || '暂无释义';
+                    generateMode2Options(word);
+                    break;
+            }
+        }
+
+        // 生成模式1的选项（单词选释义）
+        function generateMode1Options(correctWord) {
+            const optionsContainer = document.getElementById('mode1Options');
+            optionsContainer.innerHTML = '';
+            
+            // 获取正确答案
+            const correctTranslation = correctWord.translation || '暂无释义';
+            
+            // 获取其他单词的释义作为干扰项
+            const otherTranslations = wordList
+                .filter(w => w.id !== correctWord.id)
+                .map(w => w.translation || '暂无释义')
+                .slice(0, 3);
+            
+            // 确保有4个选项
+            while (otherTranslations.length < 3) {
+                otherTranslations.push(`释义${otherTranslations.length + 2}`);
+            }
+            
+            // 组合所有选项并打乱顺序
+            const allOptions = [correctTranslation, ...otherTranslations.slice(0, 3)];
+            shuffleArray(allOptions);
+            
+            // 创建选项按钮
+            allOptions.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = option;
+                button.onclick = () => selectMode1Option(index, option === correctTranslation);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        // 生成模式2的选项（释义选拼写）
+        function generateMode2Options(correctWord) {
+            const optionsContainer = document.getElementById('mode2Options');
+            optionsContainer.innerHTML = '';
+            
+            // 获取正确答案
+            const correctWordText = correctWord.word;
+            
+            // 生成干扰项（随机替换1-2个字母）
+            const distractors = generateDistractors(correctWordText, 3);
+            const allOptions = [correctWordText, ...distractors];
+            shuffleArray(allOptions);
+            
+            // 创建选项按钮
+            allOptions.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = option;
+                button.onclick = () => selectMode2Option(index, option === correctWordText);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        // 生成拼写干扰项
+        function generateDistractors(word, count) {
+            const distractors = [];
+            const letters = 'abcdefghijklmnopqrstuvwxyz';
+            
+            for (let i = 0; i < count; i++) {
+                let newWord = word.split('');
+                // 随机替换1-2个字符
+                const replaceCount = Math.floor(Math.random() * 2) + 1;
+                
+                for (let j = 0; j < replaceCount; j++) {
+                    const randomIndex = Math.floor(Math.random() * newWord.length);
+                    const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+                    newWord[randomIndex] = randomLetter;
+                }
+                
+                const distractor = newWord.join('');
+                if (distractor !== word && !distractors.includes(distractor)) {
+                    distractors.push(distractor);
+                }
+            }
+            
+            return distractors;
+        }
+
+        // 数组洗牌算法
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // 选择模式1选项
+        function selectMode1Option(optionIndex, isCorrect) {
+            // 清除之前的选中状态
+            document.querySelectorAll('#mode1Options .option-button').forEach(btn => {
+                btn.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // 设置新的选中状态
+            const selectedButton = document.querySelectorAll('#mode1Options .option-button')[optionIndex];
+            selectedButton.classList.add('selected');
+            selectedOption = {
+                index: optionIndex,
+                isCorrect: isCorrect
+            };
+        }
+
+        // 选择模式2选项
+        function selectMode2Option(optionIndex, isCorrect) {
+            // 清除之前的选中状态
+            document.querySelectorAll('#mode2Options .option-button').forEach(btn => {
+                btn.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // 设置新的选中状态
+            const selectedButton = document.querySelectorAll('#mode2Options .option-button')[optionIndex];
+            selectedButton.classList.add('selected');
+            selectedOption = {
+                index: optionIndex,
+                isCorrect: isCorrect
+            };
+        }
+
+        // 提交模式1答案
+        function submitMode1Answer() {
+            if (selectedOption === null) {
+                alert('请先选择一个答案！');
+                return;
+            }
+            
+            const options = document.querySelectorAll('#mode1Options .option-button');
+            const selectedButton = options[selectedOption.index];
+            
+            if (selectedOption.isCorrect) {
+                // 显示正确反馈
+                selectedButton.classList.add('correct');
+                showFeedback('🎉 答案正确！', 'success');
+                
+                // 正确回答，移动到下一个学习项
+                setTimeout(() => {
+                    moveToNextItem(true);
+                }, 1000);
+            } else {
+                // 显示错误反馈
+                selectedButton.classList.add('incorrect');
+                const correctButton = Array.from(options).find(btn => 
+                    btn.textContent === learningQueue[currentQueueIndex].word.translation
+                );
+                if (correctButton) {
+                    correctButton.classList.add('correct');
+                }
+                showFeedback(`❌ 答案错误！正确答案是：${learningQueue[currentQueueIndex].word.translation}`, 'error');
+                
+                // 错误回答，移动到下一个学习项
+                setTimeout(() => {
+                    moveToNextItem(false);
+                }, 1500);
+            }
+            
+            // 显示下一步按钮
+            document.getElementById('mode1SubmitBtn').style.display = 'none';
+            document.getElementById('mode1NextBtn').style.display = 'inline-flex';
+        }
+
+        // 提交模式2答案
+        function submitMode2Answer() {
+            if (selectedOption === null) {
+                alert('请先选择一个答案！');
+                return;
+            }
+            
+            const options = document.querySelectorAll('#mode2Options .option-button');
+            const selectedButton = options[selectedOption.index];
+            
+            if (selectedOption.isCorrect) {
+                // 显示正确反馈
+                selectedButton.classList.add('correct');
+                showFeedback('🎉 答案正确！', 'success');
+                
+                // 正确回答，移动到下一个学习项
+                setTimeout(() => {
+                    moveToNextItem(true);
+                }, 1000);
+            } else {
+                // 显示错误反馈
+                selectedButton.classList.add('incorrect');
+                const correctButton = Array.from(options).find(btn => 
+                    btn.textContent === learningQueue[currentQueueIndex].word.word
+                );
+                if (correctButton) {
+                    correctButton.classList.add('correct');
+                }
+                showFeedback(`❌ 答案错误！正确答案是：${learningQueue[currentQueueIndex].word.word}`, 'error');
+                
+                // 错误回答，移动到下一个学习项
+                setTimeout(() => {
+                    moveToNextItem(false);
+                }, 1500);
+            }
+            
+            // 显示下一步按钮
+            document.getElementById('mode2SubmitBtn').style.display = 'none';
+            document.getElementById('mode2NextBtn').style.display = 'inline-flex';
+        }
+
+        // 显示反馈消息
+        function showFeedback(message, type) {
+            // 移除现有的反馈消息
+            const existingFeedback = document.querySelector('.feedback-message');
+            if (existingFeedback) {
+                existingFeedback.remove();
+            }
+            
+            // 创建新的反馈消息
+            const feedback = document.createElement('div');
+            feedback.className = `feedback-message feedback-${type}`;
+            feedback.textContent = message;
+            
+            // 插入到卡片中
+            const currentCard = document.querySelector(`.mode-${currentMode}-card`);
+            currentCard.insertBefore(feedback, currentCard.querySelector('.word-controls'));
+        }
+
+        // 更新数据库中的模式状态
+        async function updateModeStatus(wordId, newMode) {
+            try {
+                const response = await fetch('/api/vocabulary/update-mode-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        word_id: wordId,
+                        mode: newMode,
+                        is_correct: true // 总是表示正确
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    console.log(`✅ 单词ID ${wordId} 模式更新为 ${newMode}`);
+                    modeStatus[wordId] = newMode;
+                } else {
+                    console.error('更新模式状态失败:', result.message);
+                }
+                return result.success;
+            } catch (error) {
+                console.error('更新模式状态时出现错误:', error);
+                return false;
+            }
+        }
+        
+        // 移动到队列中的下一个学习项
+        function moveToNextItem(isCorrect = true) {
+            if (learningQueue.length === 0) return;
+            
+            const currentItem = learningQueue[currentQueueIndex];
+            const wordId = currentItem.word.id;
+            const currentMode = currentItem.mode;
+            
+            console.log(`➡️ 处理单词: ${currentItem.word.word} (模式${currentMode}), 结果: ${isCorrect ? '正确' : '错误'}`);
+            
+            if (isCorrect) {
+                // 回答正确：根据当前模式决定下一步
+                let newMode;
+                
+                switch(currentMode) {
+                    case 0: // 模式0 → 模式1，加入队列尾部
+                        newMode = 1;
+                        // 将单词以新模式加入队列尾部
+                        learningQueue.push({
+                            word: currentItem.word,
+                            mode: newMode
+                        });
+                        console.log(`🔄 模式0完成，升级到模式${newMode}并加入队列尾部`);
+                        break;
+                        
+                    case 1: // 模式1 → 模式2，加入队列尾部
+                        newMode = 2;
+                        // 将单词以新模式加入队列尾部
+                        learningQueue.push({
+                            word: currentItem.word,
+                            mode: newMode
+                        });
+                        console.log(`🔄 模式1完成，升级到模式${newMode}并加入队列尾部`);
+                        break;
+                        
+                    case 2: // 模式2 → 模式3，加入已完成队列
+                        newMode = 3;
+                        // 加入已完成队列
+                        completedQueue.push({
+                            word: currentItem.word,
+                            mode: newMode
+                        });
+                        console.log(`✅ 模式2完成，单词已完全掌握，加入已完成队列`);
+                        break;
+                }
+                
+                // 记录待更新状态
+                pendingUpdates.push({
+                    wordId: wordId,
+                    newMode: newMode
+                });
+                
+                // 更新内存中的模式状态
+                modeStatus[wordId] = newMode;
+                
+                // 从学习队列中移除当前项
+                learningQueue.splice(currentQueueIndex, 1);
+                console.log(`🗑️ 从学习队列中移除，学习队列剩余: ${learningQueue.length} 项`);
+                console.log(`📦 已完成队列: ${completedQueue.length} 项`);
+                
+            } else {
+                // 回答错误：先从当前位置删除，然后重新加入到队列尾部
+                console.log(`❌ 回答错误，从队列头部删除单词: ${currentItem.word.word}`);
+                
+                // 先从当前位置移除
+                learningQueue.splice(currentQueueIndex, 1);
+                
+                // 然后加入到队列尾部（保持当前模式不变）
+                learningQueue.push({
+                    word: currentItem.word,
+                    mode: currentMode
+                });
+                
+                console.log(`🔄 错误单词重新加入队尾，队列长度: ${learningQueue.length}`);
+                
+                // 由于splice改变了数组，currentQueueIndex自动指向下一个元素，无需手动增加
+            }
+            
+            // 检查是否完成学习
+            if (learningQueue.length === 0) {
+                console.log('🎉 所有单词学习完成，准备批量更新数据库');
+                console.log(`📊 最终统计 - 学习队列: ${learningQueue.length} 项, 已完成队列: ${completedQueue.length} 项`);
+                finishLearning();
+                return;
+            }
+            
+            // 确保索引在有效范围内
+            if (currentQueueIndex >= learningQueue.length) {
+                currentQueueIndex = 0;
+            }
+            
+            // 更新显示
+            updateProgress();
+            showCurrentModeCard();
+            displayCurrentWord();
+        }
+
+        // 下一个模式0单词
+        function nextMode0Word() {
+            // 模式0点击'下一个'时，将单词以模式1加入学习队列尾部
+            const currentItem = learningQueue[currentQueueIndex];
+            const wordId = currentItem.word.id;
+            
+            console.log(`🧠 模式0完成: ${currentItem.word.word}，加入模式1到队列尾部`);
+            
+            // 将单词以模式1加入队列尾部
+            learningQueue.push({
+                word: currentItem.word,
+                mode: 1
+            });
+            
+            // 记录待更新状态
+            pendingUpdates.push({
+                wordId: wordId,
+                newMode: 1
+            });
+            
+            // 更新内存中的模式状态
+            modeStatus[wordId] = 1;
+            
+            // 从当前位置移除
+            learningQueue.splice(currentQueueIndex, 1);
+            
+            // 更新显示
+            if (learningQueue.length === 0) {
+                console.log('🎉 所有单词学习完成，准备批量更新数据库');
+                finishLearning();
+                return;
+            }
+            
+            // 确保索引在有效范围内
+            if (currentQueueIndex >= learningQueue.length) {
+                currentQueueIndex = 0;
+            }
+            
+            updateProgress();
+            showCurrentModeCard();
+            displayCurrentWord();
+        }
+
+        // 下一个模式1单词
+        function nextMode1Word() {
+            // 重置选项状态
+            document.querySelectorAll('#mode1Options .option-button').forEach(btn => {
+                btn.classList.remove('selected', 'correct', 'incorrect');
+            });
+            selectedOption = null;
+            
+            // 重置按钮显示
+            document.getElementById('mode1SubmitBtn').style.display = 'inline-flex';
+            document.getElementById('mode1NextBtn').style.display = 'none';
+            
+            // 移除反馈消息
+            const feedback = document.querySelector('.feedback-message');
+            if (feedback) feedback.remove();
+        }
+
+        // 下一个模式2单词
+        function nextMode2Word() {
+            // 重置选项状态
+            document.querySelectorAll('#mode2Options .option-button').forEach(btn => {
+                btn.classList.remove('selected', 'correct', 'incorrect');
+            });
+            selectedOption = null;
+            
+            // 重置按钮显示
+            document.getElementById('mode2SubmitBtn').style.display = 'inline-flex';
+            document.getElementById('mode2NextBtn').style.display = 'none';
+            
+            // 移除反馈消息
+            const feedback = document.querySelector('.feedback-message');
+            if (feedback) feedback.remove();
+        }
+
+        
+        // 播放发音
+        function playPronunciation(mode) {
+            const word = wordList[currentWordIndex]?.word;
+            if (word) {
+                // 这里可以集成语音合成API
+                alert(`播放发音: ${word}`);
+            }
+        }
+
+        // 显示提示
+        function showHint(mode) {
+            const word = wordList[currentWordIndex];
+            if (word) {
+                alert(`提示：这个词的意思是 "${word.translation}"`);
+            }
+        }
+
+        // 更新学习经验值
+        async function updateLearningExp(expAmount) {
+            if (!currentUser || !currentUser.account) {
+                console.error('❌ 无法更新经验值：用户信息缺失');
+                return false;
+            }
+            
+            if (expAmount <= 0) {
+                console.log('ℹ️ 无经验值需要更新');
+                return true;
+            }
+            
+            try {
+                console.log(`📤 正在更新经验值: ${expAmount} 点`);
+                
+                const response = await fetch('/api/update-learning-exp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        account: currentUser.account,
+                        exp_gained: expAmount,
+                        activity_type: 'vocabulary_learning',
+                        description: `完成${expAmount/10}个单词的学习`
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log(`✅ 经验值更新成功: +${expAmount} 点`);
+                    return true;
+                } else {
+                    console.error('❌ 经验值更新失败:', result.message);
+                    return false;
+                }
+                
+            } catch (error) {
+                console.error('❌ 更新经验值时出现错误:', error);
+                return false;
+            }
+        }
+        
+        // 批量更新数据库中的模式状态
+        async function batchUpdateModeStatus() {
+            if (pendingUpdates.length === 0) {
+                console.log('📋 没有待更新的数据');
+                return true;
+            }
+            
+            console.log(`📥 开始批量更新 ${pendingUpdates.length} 个单词的模式状态`);
+            
+            try {
+                const response = await fetch('/api/vocabulary/batch-update-mode-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        updates: pendingUpdates
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    console.log('✅ 批量更新成功');
+                    pendingUpdates = []; // 清空待更新队列
+                    return true;
+                } else {
+                    console.error('❌ 批量更新失败:', result.message);
+                    return false;
+                }
+            } catch (error) {
+                console.error('❌ 批量更新时出现错误:', error);
+                return false;
+            }
+        }
+        
+        // 更新已完成队列到数据库
+        async function updateCompletedQueue() {
+            if (completedQueue.length === 0) {
+                console.log('📋 没有已完成的单词需要更新');
+                return true;
+            }
+            
+            console.log(`📥 开始更新 ${completedQueue.length} 个已完成单词到模式3`);
+            
+            // 构建更新数据
+            const completedUpdates = completedQueue.map(item => ({
+                wordId: item.word.id,
+                newMode: 3
+            }));
+            
+            try {
+                const response = await fetch('/api/vocabulary/batch-update-mode-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        updates: completedUpdates
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    console.log('✅ 已完成队列更新成功');
+                    return true;
+                } else {
+                    console.error('❌ 已完成队列更新失败:', result.message);
+                    return false;
+                }
+            } catch (error) {
+                console.error('❌ 更新已完成队列时出现错误:', error);
+                return false;
+            }
+        }
+        
+        // 完成学习
+        async function finishLearning() {
+            // 批量更新学习过程中的状态变更
+            const updateSuccess = await batchUpdateModeStatus();
+            
+            // 更新已完成队列
+            const completedSuccess = await updateCompletedQueue();
+            
+            // 计算并更新经验值
+            let expSuccess = false;
+            if (updateSuccess && completedSuccess) {
+                const completedWordsCount = completedQueue.length;
+                const expGained = completedWordsCount * 10; // 每个完成的单词获得10点经验
+                
+                console.log(`📊 学习统计: 完成${completedWordsCount}个单词，获得${expGained}点经验`);
+                
+                // 更新经验值
+                expSuccess = await updateLearningExp(expGained);
+            }
+            
+            if (updateSuccess && completedSuccess && expSuccess) {
+                alert(`🎉 恭喜完成本轮生词学习！
+📊 统计信息:
+- 学习队列: ${learningQueue.length} 项
+- 已完成队列: ${completedQueue.length} 项
+- 获得经验: ${completedQueue.length * 10} 点`);
+            } else if (updateSuccess && completedSuccess) {
+                alert(`🎉 恭喜完成本轮生词学习！
+⚠️ 经验值更新失败，请稍后重试
+📊 统计信息:
+- 学习队列: ${learningQueue.length} 项
+- 已完成队列: ${completedQueue.length} 项`);
+            } else {
+                alert('⚠️ 学习完成，但数据库更新失败，请稍后重试');
+            }
+            
+            // 可以在这里添加统计数据或重新开始的选项
+            goBack();
+        }
+
+        // 返回单词训练中心
+        function goBack() {
+            window.location.href = '/static/OKComputer_企业化网页重设/vocabulary_training.html';
+        }
+    </script>
+</body>
+</html>

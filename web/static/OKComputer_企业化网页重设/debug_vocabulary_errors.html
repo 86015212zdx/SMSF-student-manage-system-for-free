@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生词学习错误处理调试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .log-area {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .primary { background: #007bff; color: white; }
+        .success { background: #28a745; color: white; }
+        .danger { background: #dc3545; color: white; }
+        .warning { background: #ffc107; color: black; }
+        .info { background: #17a2b8; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 生词学习错误处理调试工具</h1>
+        <p>这个工具可以帮助你测试和调试生词学习页面的错误单词重学功能。</p>
+        
+        <div class="button-group">
+            <button class="primary" onclick="startTest()">开始测试</button>
+            <button class="success" onclick="simulateErrors()">模拟错误</button>
+            <button class="warning" onclick="clearLogs()">清空日志</button>
+            <button class="info" onclick="goToLearningPage()">前往学习页面</button>
+        </div>
+        
+        <div class="log-area" id="logArea">
+            <div>=== 调试日志 ===</div>
+            <div>点击"开始测试"来初始化调试环境...</div>
+        </div>
+        
+        <div class="button-group">
+            <button class="danger" onclick="resetTestData()">重置测试数据</button>
+        </div>
+    </div>
+
+    <script>
+        let logs = [];
+        let testWrongWords = {0: [], 1: [], 2: []};
+        let testWordList = [];
+        let testCurrentMode = 0;
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            logs.push(logEntry);
+            
+            const logArea = document.getElementById('logArea');
+            const logDiv = document.createElement('div');
+            
+            switch(type) {
+                case 'error':
+                    logDiv.style.color = '#ff6b6b';
+                    break;
+                case 'success':
+                    logDiv.style.color = '#51cf66';
+                    break;
+                case 'warning':
+                    logDiv.style.color = '#ffd43b';
+                    break;
+                default:
+                    logDiv.style.color = '#00ff00';
+            }
+            
+            logDiv.textContent = logEntry;
+            logArea.appendChild(logDiv);
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+        
+        function clearLogs() {
+            logs = [];
+            document.getElementById('logArea').innerHTML = '<div>=== 日志已清空 ===</div>';
+        }
+        
+        function startTest() {
+            log('🧪 开始测试生词学习错误处理机制', 'success');
+            
+            // 模拟初始化数据
+            testWordList = [
+                {id: 1, word: 'hello', translation: '你好'},
+                {id: 2, word: 'world', translation: '世界'},
+                {id: 3, word: 'study', translation: '学习'},
+                {id: 4, word: 'english', translation: '英语'},
+                {id: 5, word: 'computer', translation: '计算机'}
+            ];
+            
+            log(`📚 初始化单词列表，共 ${testWordList.length} 个单词`);
+            log(`📋 单词列表: ${testWordList.map(w => w.word).join(', ')}`);
+            
+            // 重置错误记录
+            testWrongWords = {0: [], 1: [], 2: []};
+            testCurrentMode = 0;
+            
+            log('🔄 错误记录已重置', 'success');
+        }
+        
+        function simulateErrors() {
+            log('💥 开始模拟错误答题...', 'warning');
+            
+            // 模拟模式1错误
+            if (testWordList.length > 0) {
+                const wrongWord1 = testWordList[0];
+                testWrongWords[1].push(wrongWord1);
+                log(`❌ 模式1错误: ${wrongWord1.word}`, 'error');
+            }
+            
+            // 模拟模式2错误
+            if (testWordList.length > 1) {
+                const wrongWord2 = testWordList[1];
+                testWrongWords[2].push(wrongWord2);
+                log(`❌ 模式2错误: ${wrongWord2.word}`, 'error');
+            }
+            
+            log(`📊 当前错误统计:`);
+            log(`   模式0错误: ${testWrongWords[0].length} 个`);
+            log(`   模式1错误: ${testWrongWords[1].length} 个`);
+            log(`   模式2错误: ${testWrongWords[2].length} 个`);
+        }
+        
+        function testAddWrongWords() {
+            log('🔄 测试错误单词添加功能...', 'warning');
+            
+            if (testWrongWords[testCurrentMode] && testWrongWords[testCurrentMode].length > 0) {
+                const originalLength = testWordList.length;
+                const wrongWordsToAdd = [...testWrongWords[testCurrentMode]];
+                testWordList.push(...wrongWordsToAdd);
+                
+                log(`✅ 成功添加 ${wrongWordsToAdd.length} 个错误单词到学习列表`);
+                log(`📈 单词列表从 ${originalLength} 扩展到 ${testWordList.length}`);
+                log(`📋 新增单词: ${wrongWordsToAdd.map(w => w.word).join(', ')}`);
+                
+                // 清空已添加的错误记录
+                testWrongWords[testCurrentMode] = [];
+                log(`🧹 已清空模式${testCurrentMode}的错误记录`);
+            } else {
+                log(`ℹ️ 模式${testCurrentMode}没有错误单词需要添加`, 'warning');
+            }
+        }
+        
+        function goToLearningPage() {
+            log('🚀 跳转到生词学习页面...', 'success');
+            window.open('/static/OKComputer_企业化网页重设/new_vocabulary_learning.html', '_blank');
+        }
+        
+        function resetTestData() {
+            log('🔄 重置所有测试数据...', 'warning');
+            testWrongWords = {0: [], 1: [], 2: []};
+            testWordList = [];
+            testCurrentMode = 0;
+            log('✅ 测试数据已重置', 'success');
+        }
+        
+        // 页面加载时的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🔧 调试工具已加载完成');
+            log('💡 使用说明:');
+            log('   1. 点击"开始测试"初始化环境');
+            log('   2. 点击"模拟错误"生成测试数据');
+            log('   3. 点击"前往学习页面"进行实际测试');
+            log('   4. 查看浏览器控制台获取详细调试信息');
+        });
+    </script>
+</body>
+</html>

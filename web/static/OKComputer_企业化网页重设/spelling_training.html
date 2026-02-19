@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拼写漫游 - SMSF 英语学习平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="/static/OKComputer_企业化网页重设/utils.js"></script>
+    <link rel="stylesheet" href="/static/zt/fonts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', 'Quattrocento Sans', sans-serif;
+        }
+
+        body {
+            background: #1A202C;
+            color: #E2E8F0;
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏 */
+        nav {
+            background: #2D3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4A5568;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .nav-back {
+            background: #4A5568;
+            color: #A0AEC0;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-back:hover {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        /* 主要内容区域 */
+        .main-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: #A0AEC0;
+        }
+
+        /* 游戏区域 */
+        .game-area {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #4A5568;
+        }
+
+        .progress-container {
+            margin-bottom: 2rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #A0AEC0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #4A5568;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38B2AC 0%, #4FD1C7 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* 单词显示区域 */
+        .word-display-area {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: #1A202C;
+            border-radius: 12px;
+            border: 1px solid #4A5568;
+        }
+
+        .chinese-definition {
+            font-size: 1.4rem;
+            color: #E2E8F0;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .phonetic-display {
+            font-size: 1.1rem;
+            color: #A0AEC0;
+            font-style: italic;
+            margin-bottom: 2rem;
+        }
+
+        /* 拼写输入区域 */
+        .spelling-input-area {
+            margin: 2rem 0;
+        }
+
+        .underline-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+            min-height: 60px;
+            align-items: center;
+        }
+
+        .letter-underline {
+            position: relative;
+            width: 40px;
+            height: 50px;
+            border-bottom: 3px solid #4A5568;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #E2E8F0;
+            transition: all 0.3s ease;
+        }
+
+        .letter-underline.filled {
+            border-bottom-color: #38B2AC;
+            color: #38B2AC;
+        }
+
+        .letter-underline.correct {
+            border-bottom-color: #48BB78;
+            color: #48BB78;
+        }
+
+        .letter-underline.incorrect {
+            border-bottom-color: #E53E3E;
+            color: #E53E3E;
+        }
+
+        .letter-underline.current {
+            border-bottom-color: #ED8936;
+            box-shadow: 0 0 10px rgba(237, 137, 54, 0.5);
+        }
+
+        /* 控制按钮 */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .control-button {
+            background: #4A5568;
+            color: #E2E8F0;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .control-button:hover {
+            background: #38B2AC;
+            color: #1A202C;
+            transform: translateY(-2px);
+        }
+
+        .control-button.primary {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .control-button.primary:hover {
+            background: #4FD1C7;
+        }
+
+        .control-button.success {
+            background: #48BB78;
+            color: #1A202C;
+        }
+
+        .control-button.danger {
+            background: #E53E3E;
+            color: #FFFFFF;
+        }
+
+        /* 结果反馈 */
+        .feedback {
+            text-align: center;
+            margin: 1rem 0;
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feedback-message {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .feedback-message.success {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48BB78;
+            border: 1px solid #48BB78;
+        }
+
+        .feedback-message.error {
+            background: rgba(229, 62, 62, 0.2);
+            color: #E53E3E;
+            border: 1px solid #E53E3E;
+        }
+
+        .feedback-message.show {
+            display: inline-block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 统计信息 */
+        .stats-panel {
+            background: #2D3748;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid #4A5568;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1rem;
+            background: #1A202C;
+            border-radius: 8px;
+            border: 1px solid #4A5568;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #38B2AC;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #A0AEC0;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 0 1rem;
+            }
+            
+            .page-title {
+                font-size: 1.8rem;
+            }
+            
+            .letter-underline {
+                width: 30px;
+                height: 40px;
+                font-size: 1.5rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-button {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .logo-text {
+                font-size: 1.5rem;
+            }
+            
+            .page-title {
+                font-size: 1.6rem;
+            }
+            
+            .letter-underline {
+                width: 25px;
+                height: 35px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav>
+        <div class="logo-section">
+            <img src="resource_web/logo_64.png" alt="SMSF Logo" class="logo-icon">
+            <div class="logo-text">拼写漫游</div>
+        </div>
+        
+        <button class="nav-back" id="backButton">
+            <i class="fas fa-arrow-left"></i>
+            返回训练中心
+        </button>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">拼写漫游</h1>
+            <p class="page-subtitle">根据中文释义和音标，拼写出正确的英文单词</p>
+        </div>
+
+        <!-- 游戏区域 -->
+        <div class="game-area">
+            <!-- 已完成计数 -->
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>已完成</span>
+                    <span id="completedCount">0</span>
+                </div>
+            </div>
+
+            <!-- 单词显示区域 -->
+            <div class="word-display-area">
+                <div class="chinese-definition" id="chineseDefinition">
+                    正在加载单词...
+                </div>
+                <div class="phonetic-display" id="phoneticDisplay">
+                    音标加载中...
+                </div>
+            </div>
+
+            <!-- 拼写输入区域 -->
+            <div class="spelling-input-area">
+                <div class="underline-container" id="underlineContainer">
+                    <!-- 动态生成下划线 -->
+                </div>
+            </div>
+
+            <!-- 反馈信息 -->
+            <div class="feedback">
+                <div class="feedback-message success" id="successMessage">
+                    🎉 恭喜！拼写正确！
+                </div>
+                <div class="feedback-message error" id="errorMessage">
+                    ❌ 拼写错误，请重试
+                </div>
+            </div>
+
+            <!-- 控制按钮 -->
+            <div class="controls">
+                <button class="control-button" onclick="clearInput()">
+                    <i class="fas fa-eraser"></i>
+                    清空
+                </button>
+                <button class="control-button" onclick="showHint()">
+                    <i class="fas fa-lightbulb"></i>
+                    提示
+                </button>
+                <button class="control-button primary" onclick="checkAnswer()" id="checkButton">
+                    <i class="fas fa-check"></i>
+                    检查答案
+                </button>
+                <button class="control-button danger" onclick="showAnswer()" id="answerButton">
+                    <i class="fas fa-eye"></i>
+                    查看答案
+                </button>
+            </div>
+        </div>
+
+        <!-- 统计面板 -->
+        <div class="stats-panel">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="correctCount">0</div>
+                    <div class="stat-label">正确</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="wrongCount">0</div>
+                    <div class="stat-label">错误</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="accuracyRate">0%</div>
+                    <div class="stat-label">准确率</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="currentStreak">0</div>
+                    <div class="stat-label">连续正确</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let wordList = [];
+        let currentIndex = 0;
+        let userInput = [];
+        let correctCount = 0;
+        let wrongCount = 0;
+        let currentStreak = 0;
+        let totalLetters = 0;
+        // 预加载相关变量
+        let nextWordList = [];
+        let isPreloading = false;
+        // 累计计数器
+        let totalCompletedCount = 0;
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面初始化开始');
+            loadWords();
+            setupKeyboardListener();
+            
+            // 添加返回按钮事件监听器
+            const backButton = document.getElementById('backButton');
+            if (backButton) {
+                backButton.addEventListener('click', async function() {
+                    await goBack();
+                });
+            }
+            
+            console.log('页面初始化完成');
+        });
+
+        // 从API加载单词数据
+        async function loadWords() {
+            try {
+                // 调用API获取指定等级的单词
+                const response = await fetch('/api/read_some_word_form_certain_level');
+                const result = await response.json();
+                
+                // 检查API响应格式
+                if (result && result.success === true && Array.isArray(result.words)) {
+                    wordList = result.words;
+                    currentIndex = 0;
+                    displayCurrentWord();
+                    updateProgress();
+                    updateStats();
+                    console.log('成功加载单词数据:', wordList);
+                    
+                    // 开始预加载下一轮数据
+                    preloadNextRound();
+                } else {
+                    console.warn('API返回数据格式不正确，使用示例数据');
+                    loadSampleData();
+                }
+            } catch (error) {
+                console.error('加载单词数据失败:', error);
+                loadSampleData();
+            }
+        }
+
+        // 加载示例数据
+        function loadSampleData() {
+            wordList = [
+                {'word': 'sleek', 'chinese_definition': 'adj. 光滑的；时髦的；v. 使光滑；使整洁', 'phonetic': 'sli:k'},
+                {'word': 'adjacent', 'chinese_definition': 'adj. 相邻的；邻近的', 'phonetic': "ә'dʒeisәnt"},
+                {'word': 'competent', 'chinese_definition': 'adj. 有能力的；胜任的；称职的', 'phonetic': "'kɒmpitәnt"},
+                {'word': 'bewilder', 'chinese_definition': 'v. 使困惑；使迷惑', 'phonetic': "bi'wildә"},
+                {'word': 'embryo', 'chinese_definition': 'n. 胚胎；胚芽；adj. 胚胎的；初期的', 'phonetic': "'embriәu"},
+                {'word': 'assign', 'chinese_definition': 'v. 分配；指派；布置；转让', 'phonetic': "ә'sain"},
+                {'word': 'laundry', 'chinese_definition': 'n. 洗衣店；要洗的衣物；洗衣；洗涤', 'phonetic': "'lɒ:ndri"},
+                {'word': 'ideal', 'chinese_definition': 'adj. 理想的；完美的；（主义）理想主义的；n. 理想；典范', 'phonetic': "ai'diәl"},
+                {'word': 'sociology', 'chinese_definition': 'n. 社会学；社会研究；社会科学', 'phonetic': ".sәusi'ɒlәdʒi"},
+                {'word': 'consortium', 'chinese_definition': 'n. 财团；联合企业；联盟', 'phonetic': "kәn'sɒ:tjәm"}
+            ];
+            currentIndex = 0;
+            displayCurrentWord();
+            updateProgress();
+            updateStats();
+        }
+
+        // 显示当前单词
+        function displayCurrentWord() {
+            console.log('displayCurrentWord called, wordList length:', wordList.length, 'currentIndex:', currentIndex);
+            console.log('预加载数据状态: nextWordList length:', nextWordList.length, 'isPreloading:', isPreloading);
+            if (wordList.length === 0) return;
+            
+            const currentWord = wordList[currentIndex];
+            if (!currentWord) return;
+            console.log('当前单词:', currentWord);
+            
+            // 显示中文释义
+            const chineseElement = document.getElementById('chineseDefinition');
+            if (chineseElement) {
+                chineseElement.textContent = currentWord.chinese_definition;
+            }
+            
+            // 显示音标
+            const phoneticElement = document.getElementById('phoneticDisplay');
+            if (phoneticElement) {
+                phoneticElement.textContent = `[${currentWord.phonetic}]`;
+            }
+            
+            // 创建下划线容器
+            createUnderlineContainers(currentWord.word);
+            
+            // 重置用户输入
+            userInput = [];
+            resetUnderlines();
+            
+            // 重置按钮状态
+            const checkButton = document.getElementById('checkButton');
+            const answerButton = document.getElementById('answerButton');
+            if (checkButton) checkButton.style.display = 'flex';
+            if (answerButton) answerButton.style.display = 'flex';
+            
+            // 隐藏反馈消息
+            hideFeedback();
+        }
+
+        // 创建下划线容器
+        function createUnderlineContainers(word) {
+            const container = document.getElementById('underlineContainer');
+            container.innerHTML = '';
+            
+            totalLetters = word.length;
+            
+            for (let i = 0; i < totalLetters; i++) {
+                const underline = document.createElement('div');
+                underline.className = 'letter-underline';
+                underline.dataset.index = i;
+                container.appendChild(underline);
+            }
+        }
+
+        // 重置下划线样式
+        function resetUnderlines() {
+            const underlines = document.querySelectorAll('.letter-underline');
+            underlines.forEach((underline, index) => {
+                underline.textContent = '';
+                underline.className = 'letter-underline';
+                if (index === 0) {
+                    underline.classList.add('current');
+                }
+            });
+        }
+
+        // 设置键盘监听器
+        function setupKeyboardListener() {
+            document.addEventListener('keydown', function(e) {
+                // 只在游戏区域内响应键盘事件
+                if (document.activeElement.tagName !== 'INPUT' && 
+                    document.activeElement.tagName !== 'TEXTAREA') {
+                    
+                    // 处理字母输入
+                    if (/^[a-zA-Z]$/.test(e.key)) {
+                        handleLetterInput(e.key.toLowerCase());
+                    }
+                    // 处理退格键
+                    else if (e.key === 'Backspace') {
+                        handleBackspace();
+                    }
+                    // 处理空格键（清空）
+                    else if (e.key === ' ') {
+                        e.preventDefault();
+                        clearInput();
+                    }
+                    // 处理回车键（检查答案）
+                    else if (e.key === 'Enter') {
+                        checkAnswer();
+                    }
+                }
+            });
+        }
+
+        // 处理字母输入
+        function handleLetterInput(letter) {
+            if (userInput.length < totalLetters) {
+                userInput.push(letter);
+                updateUnderlineDisplay();
+                
+                // 如果输入完成，自动检查答案
+                if (userInput.length === totalLetters) {
+                    setTimeout(checkAnswer, 300);
+                }
+            }
+        }
+
+        // 处理退格键
+        function handleBackspace() {
+            if (userInput.length > 0) {
+                userInput.pop();
+                updateUnderlineDisplay();
+                // 清空最后一个字母框
+                clearLastUnderline();
+            }
+        }
+
+        // 更新下划线显示
+        function updateUnderlineDisplay() {
+            const underlines = document.querySelectorAll('.letter-underline');
+            const currentWord = wordList[currentIndex].word.toLowerCase();
+            
+            underlines.forEach((underline, index) => {
+                // 重置样式
+                underline.className = 'letter-underline';
+                
+                if (index < userInput.length) {
+                    // 已输入的字母
+                    const userLetter = userInput[index];
+                    const correctLetter = currentWord[index];
+                    
+                    underline.textContent = userLetter;
+                    
+                    if (userLetter === correctLetter) {
+                        underline.classList.add('correct');
+                    } else {
+                        underline.classList.add('incorrect');
+                    }
+                } else if (index === userInput.length) {
+                    // 当前输入位置
+                    underline.classList.add('current');
+                }
+            });
+        }
+
+        // 检查答案
+        function checkAnswer() {
+            if (userInput.length === 0) {
+                showMessage('请先输入单词', 'error');
+                return;
+            }
+            
+            const currentWord = wordList[currentIndex].word.toLowerCase();
+            const userWord = userInput.join('').toLowerCase();
+            
+            if (userWord === currentWord) {
+                // 答案正确
+                correctCount++;
+                currentStreak++;
+                
+                // 高亮显示所有正确字母
+                highlightAllCorrect();
+                
+                // 直接跳转到下一个单词
+                setTimeout(nextWord, 800);
+                
+            } else {
+                // 答案错误 - 增加错误计数
+                wrongCount++;
+                currentStreak = 0;
+                showMessage('❌ 拼写错误，请重试', 'error');
+                
+                // 高亮显示错误字母
+                highlightErrors();
+            }
+            
+            updateStats();
+        }
+
+        // 高亮所有正确字母
+        function highlightAllCorrect() {
+            const underlines = document.querySelectorAll('.letter-underline');
+            underlines.forEach(underline => {
+                underline.classList.remove('incorrect', 'current');
+                underline.classList.add('correct');
+            });
+        }
+
+        // 高亮错误字母
+        function highlightErrors() {
+            const underlines = document.querySelectorAll('.letter-underline');
+            const currentWord = wordList[currentIndex].word.toLowerCase();
+            
+            underlines.forEach((underline, index) => {
+                if (index < userInput.length) {
+                    const userLetter = userInput[index];
+                    const correctLetter = currentWord[index];
+                    
+                    if (userLetter !== correctLetter) {
+                        underline.classList.add('incorrect');
+                    }
+                }
+            });
+        }
+
+        // 清空最后一个字母框
+        function clearLastUnderline() {
+            const underlines = document.querySelectorAll('.letter-underline');
+            if (underlines.length > userInput.length) {
+                const lastUnderline = underlines[userInput.length];
+                if (lastUnderline) {
+                    lastUnderline.textContent = '';
+                    lastUnderline.className = 'letter-underline';
+                    // 设置当前输入位置高亮
+                    if (userInput.length < underlines.length) {
+                        underlines[userInput.length].classList.add('current');
+                    }
+                }
+            }
+        }
+
+        // 显示消息
+        function showMessage(text, type) {
+            hideFeedback();
+            
+            const messageElement = document.getElementById(type === 'success' ? 'successMessage' : 'errorMessage');
+            messageElement.textContent = text;
+            messageElement.classList.add('show');
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                messageElement.classList.remove('show');
+            }, 3000);
+        }
+
+        // 隐藏反馈消息
+        function hideFeedback() {
+            document.getElementById('successMessage').classList.remove('show');
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        // 清空输入
+        function clearInput() {
+            userInput = [];
+            resetUnderlines();
+            hideFeedback();
+        }
+
+        // 显示提示
+        function showHint() {
+            const currentWord = wordList[currentIndex].word;
+            const hintLength = Math.min(2, Math.floor(currentWord.length / 2));
+            let hint = '';
+            
+            for (let i = 0; i < currentWord.length; i++) {
+                if (i < hintLength) {
+                    hint += currentWord[i];
+                } else {
+                    hint += '_';
+                }
+            }
+            
+            showMessage(`💡 提示: ${hint}`, 'success');
+        }
+
+        // 显示答案
+        function showAnswer() {
+            const currentWord = wordList[currentIndex].word;
+            showMessage(`📝 正确答案: ${currentWord}`, 'error');
+            
+            // 用户查看答案时增加错误计数
+            wrongCount++;
+            updateStats();
+        }
+
+        // 下一个单词
+        function nextWord() {
+            if (currentIndex < wordList.length - 1) {
+                currentIndex++;
+                displayCurrentWord();
+                updateProgress();
+                
+                // 检查是否需要预加载下一轮
+                if (currentIndex === wordList.length - 3) { // 第8个单词时开始预加载
+                    preloadNextRound();
+                }
+            } else {
+                // 完成所有单词，如果有预加载数据则切换
+                if (nextWordList.length > 0) {
+                    switchToNextRound();
+                } else {
+                    // 完成所有单词
+                    showCompletion();
+                }
+            }
+        }
+
+        // 更新进度
+        function updateProgress() {
+            // 只显示已完成的数量（累计）
+            const completedElement = document.getElementById('completedCount');
+            if (completedElement) {
+                completedElement.textContent = totalCompletedCount + currentIndex;
+            }
+        }
+        
+        // 预加载下一轮数据
+        async function preloadNextRound() {
+            if (isPreloading) return; // 避免重复预加载
+            
+            isPreloading = true;
+            console.log('开始预加载下一轮数据...');
+            
+            try {
+                const response = await fetch('/api/read_some_word_form_certain_level');
+                const result = await response.json();
+                
+                if (result && result.success === true && Array.isArray(result.words)) {
+                    nextWordList = result.words;
+                    console.log('预加载完成，下一轮数据:', nextWordList);
+                } else {
+                    console.warn('预加载数据格式不正确');
+                }
+            } catch (error) {
+                console.error('预加载数据失败:', error);
+            } finally {
+                isPreloading = false;
+            }
+        }
+        
+        // 切换到下一轮数据
+        function switchToNextRound() {
+            console.log('切换到下一轮数据');
+            
+            // 累计已完成的单词数量
+            totalCompletedCount += wordList.length;
+            
+            wordList = nextWordList;
+            currentIndex = 0;
+            nextWordList = [];
+            
+            // 重置输入状态
+            userInput = [];
+            
+            // 显示新单词
+            displayCurrentWord();
+            updateProgress();
+            
+            // 开始预加载再下一轮
+            preloadNextRound();
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('wrongCount').textContent = wrongCount;
+            document.getElementById('currentStreak').textContent = currentStreak;
+            
+            const totalAttempts = correctCount + wrongCount;
+            const accuracyRate = totalAttempts > 0 ? Math.round((correctCount / totalAttempts) * 100) : 0;
+            document.getElementById('accuracyRate').textContent = `${accuracyRate}%`;
+        }
+
+        // 显示完成界面
+        function showCompletion() {
+            const totalAttempts = correctCount + wrongCount;
+            const accuracyRate = totalAttempts > 0 ? Math.round((correctCount / totalAttempts) * 100) : 0;
+            
+            alert(`🎉 恭喜完成拼写漫游！
+
+📊 统计结果：
+✅ 正确: ${correctCount}
+❌ 错误: ${wrongCount}
+📈 准确率: ${accuracyRate}%
+🔥 最大连胜: ${currentStreak}`);
+            
+            // 重新开始
+            restartGame();
+        }
+
+        // 重新开始游戏
+        function restartGame() {
+            currentIndex = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            currentStreak = 0;
+            totalCompletedCount = 0; // 重置累计计数
+            userInput = [];
+            displayCurrentWord();
+            updateProgress();
+            updateStats();
+        }
+
+        // 返回训练中心
+        async function goBack() {
+            // 计算经验值: 正确词数*4 + 错误词数*2 + 连对*2
+            const expGained = correctCount * 4 + wrongCount * 2 + currentStreak * 2;
+            
+            // 显示获得的经验值
+            if (expGained > 0) {
+                alert(`🎉 本次练习获得 ${expGained} 点经验值！
+
+📊 练习统计：
+✅ 正确: ${correctCount} (${correctCount * 4} exp)
+❌ 错误: ${wrongCount} (${wrongCount * 2} exp)
+🔥 连续正确: ${currentStreak} (${currentStreak * 2} exp)`);
+            }
+            
+            // 向服务器发送经验值更新请求
+            await updateSpellingExp();
+            
+            window.location.href = '/static/OKComputer_企业化网页重设/vocabulary_training.html';
+        }
+        
+        // 更新拼写训练经验值
+        async function updateSpellingExp() {
+            try {
+                // 获取当前用户账户（从会话或其他方式）
+                // 这里假设可以通过某种方式获取当前用户账户
+                const account = await getCurrentUserAccount();
+                
+                if (!account) {
+                    console.warn('无法获取用户账户信息');
+                    return;
+                }
+                
+                // 发送经验值更新请求
+                const response = await fetch('/api/update-spelling-exp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        account: account,
+                        correct_count: correctCount,
+                        wrong_count: wrongCount,
+                        streak_count: currentStreak
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('经验值更新成功:', result.message);
+                } else {
+                    console.error('经验值更新失败:', result.message);
+                }
+                
+            } catch (error) {
+                console.error('更新经验值时出现错误:', error);
+            }
+        }
+        
+        // 获取当前用户账户的辅助函数
+        async function getCurrentUserAccount() {
+            try {
+                // 首先尝试从API获取当前用户信息
+                const response = await fetch('/api/current_user', {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.user && data.user.account) {
+                        console.log('✅ 通过API获取用户账户成功:', data.user.account);
+                        return data.user.account;
+                    }
+                }
+                
+                // 方法1: 从localStorage获取
+                const storedAccount = localStorage.getItem('user_account');
+                if (storedAccount) {
+                    console.log('✅ 通过localStorage获取用户账户:', storedAccount);
+                    return storedAccount;
+                }
+                
+                // 方法2: 从全局变量获取（如果有的话）
+                if (typeof window.currentUser !== 'undefined' && window.currentUser.account) {
+                    console.log('✅ 通过全局变量获取用户账户:', window.currentUser.account);
+                    return window.currentUser.account;
+                }
+                
+                // 方法3: 从URL参数获取
+                const urlParams = new URLSearchParams(window.location.search);
+                const accountParam = urlParams.get('account');
+                if (accountParam) {
+                    console.log('✅ 通过URL参数获取用户账户:', accountParam);
+                    return accountParam;
+                }
+                
+                // 如果都获取不到，返回null
+                console.warn('❌ 无法获取用户账户信息');
+                return null;
+            } catch (error) {
+                console.error('获取用户账户时出现错误:', error);
+                return null;
+            }
+        }
+    </script>
+</body>
+</html>

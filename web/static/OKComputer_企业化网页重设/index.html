@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMSF 智慧管理 - 首页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #1A202C;
+            color: #E2E8F0;
+            min-height: 100vh;
+        }
+
+        /* 导航栏 */
+        nav {
+            background: #2D3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4A5568;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-image {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            color: #A0AEC0;
+            margin-top: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: #A0AEC0;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: #4A5568;
+            color: #38B2AC;
+        }
+
+        .login-link {
+            background: #38B2AC;
+            color: #1A202C;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .login-link:hover {
+            background: #4FD1C7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56, 178, 172, 0.3);
+        }
+
+        .return-button {
+            margin-left: 1rem;
+        }
+
+        .return-link {
+            background: #4A5568;
+            color: #E2E8F0;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #718096;
+        }
+
+        .return-link:hover {
+            background: #2D3748;
+            color: #38B2AC;
+            border-color: #38B2AC;
+            transform: translateY(-2px);
+        }
+
+        /* 主要内容区 */
+        .hero {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #1A202C 0%, #2D3748 100%);
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #A0AEC0;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        /* 服务特色区 */
+        .services {
+            padding: 4rem 2rem;
+            background: #2D3748;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            color: #E2E8F0;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .service-card {
+            background: #4A5568;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #4A5568;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            border: 1px solid #38B2AC;
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: #38B2AC;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #E2E8F0;
+        }
+
+        .service-description {
+            color: #A0AEC0;
+            line-height: 1.6;
+        }
+
+        /* 功能亮点区 */
+        .features {
+            padding: 4rem 2rem;
+            background: #1A202C;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+
+        .feature-item:nth-child(odd) {
+            background: #2D3748;
+            border-radius: 8px;
+        }
+
+        .feature-item:nth-child(even) {
+            background: #4A5568;
+            border-radius: 8px;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            color: #38B2AC;
+            margin-top: 0.25rem;
+        }
+
+        .feature-content h3 {
+            color: #E2E8F0;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-content p {
+            color: #A0AEC0;
+            line-height: 1.6;
+        }
+
+        /* 页脚 */
+        footer {
+            background: #2D3748;
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid #4A5568;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .footer-text {
+            color: #A0AEC0;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .footer-link {
+            color: #A0AEC0;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #38B2AC;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav>
+        <div class="logo">
+            <img src="resource_web/logo_64.png" alt="SMSF Logo" class="logo-image">
+            <div>
+                <div class="logo-text">SMSF 智慧管理</div>
+                <div class="logo-subtitle">student management system for free</div>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="/learning-platform" class="nav-link">
+                <i class="fas fa-graduation-cap"></i>
+                在线学习
+            </a>
+            <a href="/login" class="login-link">登录</a>
+        </div>
+    </nav>
+
+    <!-- 主要内容区 -->
+    <section class="hero">
+        <h1 class="hero-title">SMSF 智慧管理</h1>
+        <p class="hero-subtitle">student management system for free</p>
+        <p class="hero-subtitle">专业的教育管理平台，为您提供智能化的教学管理解决方案</p>
+    </section>
+
+    <!-- 服务特色区 -->
+    <section class="services">
+        <h2 class="section-title">我们的服务</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">📚</div>
+                <h3 class="service-title">教育管理</h3>
+                <p class="service-description">全面的学生信息管理、班级组织架构、教师资源调配，实现教育机构的数字化转型和精细化运营。</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🧠</div>
+                <h3 class="service-title">智能学习</h3>
+                <p class="service-description">基于大数据分析的学习路径推荐、个性化知识推送、智能作业批改，助力学生高效学习成长。</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">📊</div>
+                <h3 class="service-title">数据分析</h3>
+                <p class="service-description">多维度的学习效果分析、考试成绩统计、学生行为洞察，为教学决策提供科学依据。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 功能亮点区 -->
+    <section class="features">
+        <h2 class="section-title">功能亮点</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <div class="feature-content">
+                    <h3>学生信息管理</h3>
+                    <p>集中管理学生档案、成绩记录、出勤情况，支持批量导入导出，大幅提升教务工作效率。</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <div class="feature-content">
+                    <h3>考试成绩统计</h3>
+                    <p>自动化成绩录入、排名分析、趋势预测，多维度评估学生学习效果，生成可视化报表。</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <div class="feature-content">
+                    <h3>班级分组管理</h3>
+                    <p>灵活的班级创建、学生分配、教师指派功能，支持跨年级组合，满足多样化的教学需求。</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <div class="feature-content">
+                    <h3>数据安全保障</h3>
+                    <p>采用加密存储、权限控制、备份恢复机制，确保教育数据安全可靠，符合隐私保护标准。</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <div class="feature-content">
+                    <h3>移动办公支持</h3>
+                    <p>支持多设备访问，随时随地处理教务事务，让管理工作更加便捷高效。</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <div class="feature-content">
+                    <h3>家校互动平台</h3>
+                    <p>实时沟通桥梁，家长随时了解孩子学习进展，教师及时反馈在校表现，促进协同育人。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">SMSF 智慧管理</div>
+            <p class="footer-text">专业教学管理解决方案 | 为教育机构提供智能化管理工具</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">关于我们</a>
+                <a href="#" class="footer-link">联系我们</a>
+                <a href="#" class="footer-link">使用条款</a>
+                <a href="#" class="footer-link">隐私政策</a>
+            </div>
+            <p class="footer-text">&copy; 2026 SMSF 专业教学管理解决方案 版权所有</p>
+        </div>
+    </footer>
+    <script>
+        // 首页基础功能
+        console.log('=== 智慧管理首页加载 ===');
+    </script>
+</body>
+</html>

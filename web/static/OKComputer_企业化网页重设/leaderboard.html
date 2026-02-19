@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习排行榜 - SMSF 在线学习平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- 引入工具函数 -->
+    <script src="/static/OKComputer_企业化网页重设/utils.js"></script>
+    <!-- 引入zt字体文件 -->
+    <link rel="stylesheet" href="/static/zt/fonts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', 'Quattrocento Sans', sans-serif;
+        }
+
+        body {
+            background: #1A202C;
+            color: #E2E8F0;
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏 */
+        nav {
+            background: #2D3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4A5568;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .logo-subtitle {
+            font-size: 0.85rem;
+            color: #A0AEC0;
+            font-family: 'Hedvig Letters Sans', sans-serif;
+            margin-top: 3px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-tab {
+            background: transparent;
+            color: #A0AEC0;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tab:hover {
+            background: #4A5568;
+            color: #38B2AC;
+        }
+
+        .nav-tab.active {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #E2E8F0;
+        }
+
+        .user-role {
+            font-size: 0.85rem;
+            color: #A0AEC0;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A202C;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 3px rgba(56, 178, 172, 0.3);
+        }
+
+        /* 主要内容区域 - 左右分栏布局 */
+        .main-content {
+            max-width: 1600px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #A0AEC0;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* 左右分栏容器 */
+        .leaderboard-layout {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* 左侧栏 */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* 右侧栏 */
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* 用户信息卡片 */
+        .user-profile-card {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #4A5568;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #4A5568;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A202C;
+            font-weight: 700;
+            font-size: 2rem;
+            margin: 0 auto 1rem;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #E2E8F0;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-rank {
+            font-size: 1.2rem;
+            color: #38B2AC;
+            font-weight: 600;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: #1A202C;
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+            border: 1px solid #4A5568;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #38B2AC;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #A0AEC0;
+        }
+
+        /* 好友排行榜卡片 */
+        .friends-ranking-card {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #4A5568;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            flex: 1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #4A5568;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #E2E8F0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top10-card {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #4A5568;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 排行榜列表样式 */
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem;
+            border-radius: 12px;
+            background: #1A202C;
+            border: 1px solid #4A5568;
+            transition: all 0.3s ease;
+        }
+
+        .ranking-item:hover {
+            background: rgba(56, 178, 172, 0.1);
+            border-color: #38B2AC;
+            transform: translateX(5px);
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-profile-card,
+        .friends-ranking-card,
+        .top10-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .user-profile-card {
+            animation-delay: 0.1s;
+        }
+
+        .friends-ranking-card {
+            animation-delay: 0.2s;
+        }
+
+        .top10-card {
+            animation-delay: 0.3s;
+        }
+
+        /* 等级进度条 */
+        .level-progress {
+            margin-top: 1rem;
+            background: #4A5568;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #38B2AC 0%, #4FD1C7 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* 排名趋势指示器 */
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+        }
+
+        .trend-up {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48BB78;
+        }
+
+        .trend-down {
+            background: rgba(229, 62, 62, 0.2);
+            color: #E53E3E;
+        }
+
+        .trend-same {
+            background: rgba(160, 174, 192, 0.2);
+            color: #A0AEC0;
+        }
+
+        .rank-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            min-width: 32px;
+        }
+
+        .rank-1-badge {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #1A202C;
+        }
+
+        .rank-2-badge {
+            background: linear-gradient(135deg, #C0C0C0 0%, #A9A9A9 100%);
+            color: #1A202C;
+        }
+
+        .rank-3-badge {
+            background: linear-gradient(135deg, #CD7F32 0%, #A0522D 100%);
+            color: #1A202C;
+        }
+
+        .rank-normal-badge {
+            background: #4A5568;
+            color: #E2E8F0;
+        }
+
+        .user-avatar-small {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A202C;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .user-info-text {
+            flex: 1;
+        }
+
+        .user-name-text {
+            font-weight: 600;
+            color: #E2E8F0;
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .user-level-text {
+            font-size: 0.8rem;
+            color: #A0AEC0;
+        }
+
+        .exp-value {
+            font-weight: 700;
+            color: #38B2AC;
+            font-size: 1.1rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .leaderboard-layout {
+                flex-direction: column;
+            }
+            
+            .left-column,
+            .right-column {
+                width: 100%;
+            }
+            
+            .main-content {
+                padding: 0 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .user-profile-card,
+            .friends-ranking-card,
+            .top10-card {
+                padding: 1.5rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .profile-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .ranking-item {
+                padding: 0.6rem;
+                gap: 0.8rem;
+            }
+        }
+
+        /* 排行榜表格 */
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-thead th {
+            background: #1A202C;
+            color: #A0AEC0;
+            font-weight: 600;
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 2px solid #4A5568;
+        }
+
+        .leaderboard-tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid #4A5568;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-row:hover {
+            background: rgba(56, 178, 172, 0.1);
+        }
+
+        /* 排名列样式 */
+        .rank-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .rank-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #1A202C;
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #C0C0C0 0%, #A9A9A9 100%);
+            color: #1A202C;
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #CD7F32 0%, #A0522D 100%);
+            color: #1A202C;
+        }
+
+        .rank-other {
+            background: #4A5568;
+            color: #E2E8F0;
+        }
+
+        .trend-up {
+            color: #48BB78;
+            font-size: 0.9rem;
+        }
+
+        .trend-down {
+            color: #E53E3E;
+            font-size: 0.9rem;
+        }
+
+        .trend-same {
+            color: #A0AEC0;
+            font-size: 0.9rem;
+        }
+
+        /* 学生信息列 */
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A202C;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .student-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #E2E8F0;
+            font-size: 1rem;
+        }
+
+        .student-class {
+            font-size: 0.85rem;
+            color: #A0AEC0;
+        }
+
+        /* 积分列样式 */
+        .score-cell {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #38B2AC;
+        }
+
+        /* 学科成绩列 */
+        .subject-scores {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .subject-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 60px;
+        }
+
+        .subject-name {
+            font-size: 0.8rem;
+            color: #A0AEC0;
+            margin-bottom: 0.2rem;
+        }
+
+        .subject-value {
+            font-weight: 600;
+            color: #E2E8F0;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #A0AEC0;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #4A5568;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #E2E8F0;
+            margin-bottom: 1rem;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+            color: #A0AEC0;
+        }
+
+        .loading-spinner {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 1rem;
+            }
+            
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .leaderboard-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-group {
+                justify-content: space-between;
+            }
+            
+            .search-box {
+                max-width: none;
+            }
+            
+            .leaderboard-table {
+                font-size: 0.9rem;
+            }
+            
+            .leaderboard-thead th,
+            .leaderboard-tbody td {
+                padding: 0.75rem 0.5rem;
+            }
+            
+            .subject-scores {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .leaderboard-container {
+                padding: 1rem;
+            }
+            
+            .student-info {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav>
+        <div class="logo-section">
+            <img src="resource_web/logo_64.png" alt="SMSF Logo" class="logo-icon">
+            <div>
+                <div class="logo-text">SMSF 排行榜</div>
+                <div class="logo-subtitle">Learning Leaderboard</div>
+            </div>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab" onclick="goToLearningCenter()">
+                <i class="fas fa-arrow-left"></i>
+                返回学习中心
+            </button>
+        </div>
+        
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-name" id="userName">张同学</div>
+                <div class="user-role">在校学生</div>
+            </div>
+            <div class="user-avatar" id="userAvatar">张</div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">学习排行榜</h1>
+            <p class="page-subtitle">展现学习成果，激发学习动力。在这里可以看到你和其他同学的学习排名情况</p>
+        </div>
+
+        <!-- 左右分栏布局 -->
+        <div class="leaderboard-layout">
+            <!-- 左侧栏 -->
+            <div class="left-column">
+                <!-- 用户个人信息卡片 -->
+                <div class="user-profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="currentUserAvatar">张</div>
+                        <div class="profile-name" id="currentUserName">张同学</div>
+                        <div class="profile-rank" id="currentUserRank">第 0 名</div>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="currentUserLevel">1</div>
+                            <div class="stat-label">当前等级</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="currentUserExp">0</div>
+                            <div class="stat-label">经验值</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 好友排行榜 -->
+                <div class="friends-ranking-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-users"></i>
+                            好友排行榜
+                        </h3>
+                    </div>
+                    <div class="ranking-list" id="friendsRankingList">
+                        <!-- 好友排名将通过JavaScript动态生成 -->
+                        <div class="loading-state">
+                            <div class="loading-spinner">
+                                <i class="fas fa-spinner"></i>
+                            </div>
+                            <p>正在加载好友排名...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧栏 -->
+            <div class="right-column">
+                <!-- 前10名排行榜 -->
+                <div class="top10-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-crown"></i>
+                            前10名学霸榜
+                        </h3>
+                    </div>
+                    <div class="ranking-list" id="top10RankingList">
+                        <!-- 前10名排名将通过JavaScript动态生成 -->
+                        <div class="loading-state">
+                            <div class="loading-spinner">
+                                <i class="fas fa-spinner"></i>
+                            </div>
+                            <p>正在加载排行榜...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserInfo();
+            loadCurrentUserStats();
+            loadTop10Ranking();
+            loadFriendsRanking();
+            
+            // 绑定事件监听器
+            document.getElementById('leaderboardType').addEventListener('change', function() {
+                loadTop10Ranking();
+                loadFriendsRanking();
+            });
+        });
+
+        // 加载用户信息
+        async function loadUserInfo() {
+            try {
+                const response = await fetch(buildApiUrl('/api/current_user'));
+                const data = await response.json();
+                
+                if (data.success) {
+                    const user = data.user;
+                    document.getElementById('currentUserName').textContent = user.account;
+                    document.getElementById('currentUserAvatar').textContent = user.account.charAt(0);
+                    document.getElementById('userName').textContent = user.account;
+                    document.getElementById('userAvatar').textContent = user.account.charAt(0);
+                }
+            } catch (error) {
+                console.error('加载用户信息失败:', error);
+            }
+        }
+
+        // 加载当前用户统计数据
+        async function loadCurrentUserStats() {
+            try {
+                // 模拟用户统计数据
+                const mockUserData = {
+                    level: 5,
+                    exp: 2450,
+                    rank: 12
+                };
+                
+                document.getElementById('currentUserLevel').textContent = mockUserData.level;
+                document.getElementById('currentUserExp').textContent = mockUserData.exp.toLocaleString();
+                document.getElementById('currentUserRank').textContent = `第 ${mockUserData.rank} 名`;
+                
+            } catch (error) {
+                console.error('加载用户统计数据失败:', error);
+            }
+        }
+
+        // 加载前10名排行榜
+        async function loadTop10Ranking() {
+            try {
+                // 使用现有的API或者生成模拟数据
+                const leaderboardData = generateMockTop10Data();
+                renderTop10Ranking(leaderboardData);
+            } catch (error) {
+                console.error('加载前10名排行榜失败:', error);
+                showErrorInElement('top10RankingList', '加载排行榜失败');
+            }
+        }
+
+        // 加载好友排行榜
+        async function loadFriendsRanking() {
+            try {
+                // 生成模拟好友数据
+                const friendsData = generateMockFriendsData();
+                renderFriendsRanking(friendsData);
+            } catch (error) {
+                console.error('加载好友排行榜失败:', error);
+                showErrorInElement('friendsRankingList', '加载好友排名失败');
+            }
+        }
+
+        // 渲染前10名排行榜
+        function renderTop10Ranking(rankingData) {
+            const container = document.getElementById('top10RankingList');
+            
+            if (!rankingData || rankingData.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="empty-title">暂无排名数据</div>
+                        <p>还没有足够的学习数据</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            rankingData.forEach((user, index) => {
+                const rank = index + 1;
+                const rankBadgeClass = getRankBadgeClass(rank);
+                const trend = getRandomTrend();
+                const trendIcon = getTrendIcon(trend);
+                
+                html += `
+                    <div class="ranking-item" style="animation-delay: ${index * 0.1}s">
+                        <div class="rank-badge ${rankBadgeClass}">${rank}</div>
+                        <div class="user-avatar-small">${user.name.charAt(0)}</div>
+                        <div class="user-info-text">
+                            <div class="user-name-text">${user.name}</div>
+                            <div class="user-level-text">Lv.${user.level} <span class="trend-indicator ${trend}">${trendIcon}</span></div>
+                        </div>
+                        <div class="exp-value">${user.score.toLocaleString()}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // 渲染好友排行榜
+        function renderFriendsRanking(friendsData) {
+            const container = document.getElementById('friendsRankingList');
+            
+            if (!friendsData || friendsData.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="empty-title">暂无好友</div>
+                        <p>添加好友后可以查看好友排名</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            friendsData.forEach((friend, index) => {
+                const rank = friend.rank;
+                const rankBadgeClass = getRankBadgeClass(rank);
+                const trend = getRandomTrend();
+                const trendIcon = getTrendIcon(trend);
+                
+                html += `
+                    <div class="ranking-item" style="animation-delay: ${index * 0.1}s">
+                        <div class="rank-badge ${rankBadgeClass}">${rank}</div>
+                        <div class="user-avatar-small">${friend.name.charAt(0)}</div>
+                        <div class="user-info-text">
+                            <div class="user-name-text">${friend.name}</div>
+                            <div class="user-level-text">Lv.${friend.level} <span class="trend-indicator ${trend}">${trendIcon}</span></div>
+                        </div>
+                        <div class="exp-value">${friend.score.toLocaleString()}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // 获取排名徽章样式类
+        function getRankBadgeClass(rank) {
+            if (rank === 1) return 'rank-1-badge';
+            if (rank === 2) return 'rank-2-badge';
+            if (rank === 3) return 'rank-3-badge';
+            return 'rank-normal-badge';
+        }
+
+        // 获取趋势图标
+        function getTrendIcon(trend) {
+            switch(trend) {
+                case 'trend-up':
+                    return '<i class="fas fa-arrow-up"></i>';
+                case 'trend-down':
+                    return '<i class="fas fa-arrow-down"></i>';
+                default:
+                    return '<i class="fas fa-minus"></i>';
+            }
+        }
+
+        // 生成随机趋势
+        function getRandomTrend() {
+            const trends = ['trend-up', 'trend-down', 'trend-same'];
+            return trends[Math.floor(Math.random() * trends.length)];
+        }
+
+        // 生成模拟前10名数据
+        function generateMockTop10Data() {
+            const mockUsers = [
+                {name: '李明轩', level: 12, score: getRandomScore(8000, 12000)},
+                {name: '王思雨', level: 11, score: getRandomScore(7000, 9000)},
+                {name: '张子涵', level: 10, score: getRandomScore(6000, 8000)},
+                {name: '刘浩然', level: 9, score: getRandomScore(5000, 7000)},
+                {name: '陈佳怡', level: 9, score: getRandomScore(4500, 6500)},
+                {name: '杨天宇', level: 8, score: getRandomScore(4000, 6000)},
+                {name: '赵欣然', level: 8, score: getRandomScore(3500, 5500)},
+                {name: '黄俊杰', level: 7, score: getRandomScore(3000, 5000)},
+                {name: '周梦瑶', level: 7, score: getRandomScore(2500, 4500)},
+                {name: '徐志强', level: 6, score: getRandomScore(2000, 4000)}
+            ];
+            
+            return mockUsers;
+        }
+
+        // 生成模拟好友数据
+        function generateMockFriendsData() {
+            const mockFriends = [
+                {name: '李明轩', level: 12, score: 9850, rank: 1},
+                {name: '王思雨', level: 11, score: 8200, rank: 2},
+                {name: '张子涵', level: 10, score: 7650, rank: 3},
+                {name: '刘浩然', level: 9, score: 6800, rank: 5},
+                {name: '陈佳怡', level: 9, score: 6200, rank: 7}
+            ];
+            
+            return mockFriends;
+        }
+
+        // 生成随机分数
+        function getRandomScore(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // 在指定元素中显示错误信息
+        function showErrorInElement(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="empty-title">加载失败</div>
+                    <p>${message}</p>
+                    <button class="refresh-btn" onclick="location.reload()" style="margin-top: 1rem;">
+                        <i class="fas fa-redo"></i>
+                        重新加载
+                    </button>
+                </div>
+            `;
+        }
+
+        // 返回学习中心
+        function goToLearningCenter() {
+            window.location.href = '/static/OKComputer_企业化网页重设/student_learning.html';
+        }
+    </script>
+</body>
+</html>

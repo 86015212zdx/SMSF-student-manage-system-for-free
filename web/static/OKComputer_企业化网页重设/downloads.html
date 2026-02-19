@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMSF 下载中心</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', 'Quattrocento Sans', sans-serif;
+        }
+
+        body {
+            background: #1A202C;
+            color: #E2E8F0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* 顶部导航栏 */
+        nav {
+            background: #2D3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4A5568;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .logo-subtitle {
+            font-size: 0.85rem;
+            color: #A0AEC0;
+            font-family: 'Hedvig Letters Sans', sans-serif;
+            margin-top: 3px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #A0AEC0;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            background: #4A5568;
+            color: #38B2AC;
+        }
+
+        .nav-link.active {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .back-button {
+            background: #4A5568;
+            color: #E2E8F0;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        /* 主要内容区域 */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: #A0AEC0;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* 下载卡片区域 */
+        .downloads-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .download-card {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #4A5568;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .download-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: #38B2AC;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .platform-icon {
+            width: 50px;
+            height: 50px;
+            background: #38B2AC;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #1A202C;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #E2E8F0;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .card-description {
+            color: #A0AEC0;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .version-info {
+            background: rgba(56, 178, 172, 0.1);
+            border: 1px solid rgba(56, 178, 172, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .version-label {
+            font-size: 0.9rem;
+            color: #A0AEC0;
+            margin-bottom: 0.5rem;
+        }
+
+        .version-number {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #38B2AC;
+        }
+
+        .download-button {
+            display: block;
+            width: 100%;
+            background: #38B2AC;
+            color: #1A202C;
+            text-decoration: none;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .download-button:hover {
+            background: #4FD1C7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56, 178, 172, 0.3);
+        }
+
+        .download-button:disabled {
+            background: #4A5568;
+            color: #718096;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #A0AEC0;
+        }
+
+        .spinner {
+            border: 3px solid #4A5568;
+            border-top: 3px solid #38B2AC;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 错误提示 */
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            color: #EF4444;
+            margin: 2rem 0;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+            }
+            
+            .downloads-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .download-card {
+                padding: 1.5rem;
+            }
+            
+            .card-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav>
+        <div class="logo-section">
+            <img src="resource_web/logo_64.png" alt="SMSF Logo" class="logo-icon">
+            <div>
+                <div class="logo-text">SMSF 下载中心</div>
+                <div class="logo-subtitle">软件下载专区</div>
+            </div>
+        </div>
+        
+        <div class="nav-links">
+            <a href="/learning-platform" class="nav-link">
+                <i class="fas fa-arrow-left"></i>
+                返回学习平台
+            </a>
+            <button class="back-button" onclick="goBack()">
+                <i class="fas fa-home"></i>
+                返回首页
+            </button>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">软件下载中心</h1>
+            <p class="page-subtitle">获取最新版本的SMSF智慧教育软件，支持多种操作系统平台</p>
+        </div>
+
+        <div id="downloadsContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>正在加载下载信息...</p>
+            </div>
+        </div>
+    </div>
+
+        <script>
+        // 返回首页函数
+        function goBack() {
+            window.location.href = '/learning-platform';
+        }
+
+        // 获取版本信息
+        async function fetchVersions() {
+            try {
+                const response = await fetch('/api/versions');
+                const data = await response.json();
+
+                if (data.success) {
+                    displayDownloads(data.versions);
+                } else {
+                    showError('获取版本信息失败: ' + data.message);
+                }
+            } catch (error) {
+                console.error('获取版本信息时出错:', error);
+                showError('网络错误，请稍后重试');
+            }
+        }
+
+        // 显示下载选项
+        function displayDownloads(versions) {
+            const container = document.getElementById('downloadsContainer');
+
+            if (!versions || versions.length === 0) {
+                container.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-info-circle"></i>
+                        <p>暂无可用的下载版本</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="downloads-grid">';
+
+            versions.forEach(version => {
+                html += `
+                    <div class="download-card">
+                        <div class="card-header">
+                            <div class="platform-icon">
+                                <i class="fab fa-windows"></i>
+                            </div>
+                            <h3 class="card-title">${version.platform || 'Windows'} 版本</h3>
+                        </div>
+
+                        <p class="card-description">
+                            ${version.description || '适用于Windows操作系统的完整安装包'}
+                        </p>
+
+                        <div class="version-info">
+                            <div class="version-label">当前版本</div>
+                            <div class="version-number">v${version.version || '1.0.0'}</div>
+                        </div>
+
+                        <button class="download-button" onclick="downloadFile(${version.id})">
+                            <i class="fas fa-download"></i>
+                            立即下载 (${version.file_size || '未知大小'})
+                        </button>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            const container = document.getElementById('downloadsContainer');
+            container.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>${message}</p>
+                    <button class="back-button" onclick="goBack()" style="margin-top: 1rem;">
+                        <i class="fas fa-arrow-left"></i>
+                        返回学习平台
+                    </button>
+                </div>
+            `;
+        }
+
+        // 下载文件 - 使用传统方式触发下载
+        function downloadFile(versionId) {
+            try {
+                // 创建隐藏的iframe来处理下载
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = `/api/download/${versionId}`;
+                document.body.appendChild(iframe);
+
+                // 3秒后清理iframe
+                setTimeout(() => {
+                    if (iframe.parentNode) {
+                        document.body.removeChild(iframe);
+                    }
+                }, 3000);
+
+                // 显示下载提示
+                showDownloadNotification();
+
+            } catch (error) {
+                console.error('下载过程中出错:', error);
+                alert('下载失败，请检查网络连接');
+            }
+        }
+
+        // 显示下载通知
+        function showDownloadNotification() {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #38B2AC;
+                color: #1A202C;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 1000;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+
+            notification.innerHTML = `
+                <i class="fas fa-download"></i>
+                <span>下载已开始，请查看浏览器下载列表</span>
+                <button onclick="this.parentElement.remove()" style="
+                    background: none;
+                    border: none;
+                    color: #1A202C;
+                    cursor: pointer;
+                    font-size: 18px;
+                    margin-left: 10px;
+                ">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            document.body.appendChild(notification);
+
+            // 5秒后自动消失
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // 备用下载方法 - 如果iframe方法不工作
+        function downloadFileFallback(versionId) {
+            // 直接跳转到下载URL，让浏览器处理
+            window.location.href = `/api/download/${versionId}`;
+        }
+
+        // 页面加载完成后获取版本信息
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchVersions();
+        });
+    </script>
+
+</body>
+</html>

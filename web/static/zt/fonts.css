@@ -1,0 +1,33 @@
+/* Academica Book 字体定义 */
+@font-face {
+    font-family: 'Academica Book';
+    src: url('./academica_book_regular_italic-s.p.98424ff3.woff2') format('woff2');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Academica Book';
+    src: url('./academica_book_bold_italic-s.p.1f42b458.woff2') format('woff2');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* 汉仪旗黑字体备选定义 */
+@font-face {
+    font-family: '汉仪旗黑';
+    src: url('./academica_book_regular_italic-s.p.98424ff3.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'HYQiHei';
+    src: url('./academica_book_bold_italic-s.p.1f42b458.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班级管理 - SMAF 智慧管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Quattrocento+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #1A202C;
+            color: #E2E8F0;
+        }
+        .font-heading {
+            font-family: 'Quattrocento Sans', sans-serif;
+        }
+        .sidebar {
+            background: linear-gradient(180deg, #2D3748 0%, #4A5568 100%);
+            min-height: calc(100vh - 80px);
+        }
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            background-color: rgba(56, 178, 172, 0.1);
+            border-left: 4px solid #38B2AC;
+        }
+        .nav-item.active {
+            background-color: rgba(56, 178, 172, 0.2);
+            border-left: 4px solid #38B2AC;
+        }
+        .class-card {
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%);
+            border: 1px solid #4A5568;
+            transition: all 0.3s ease;
+        }
+        .class-card:hover {
+            transform: translateY(-4px);
+            border-color: #38B2AC;
+            box-shadow: 0 10px 25px rgba(56, 178, 172, 0.2);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-item {
+            background: rgba(56, 178, 172, 0.1);
+            border: 1px solid rgba(56, 178, 172, 0.2);
+        }
+        .search-input {
+            background: #2D3748;
+            border: 1px solid #4A5568;
+            transition: all 0.2s ease;
+        }
+        .search-input:focus {
+            border-color: #38B2AC;
+            box-shadow: 0 0 0 3px rgba(56, 178, 172, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- 顶部导航栏 -->
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4">
+        <div class="flex items-center justify-between">
+            <!-- Logo和品牌 -->
+            <div class="flex items-center space-x-3">
+                <img src="resource_web/logo_64.png" alt="SMSF Logo" class="w-10 h-10 object-contain">
+                <div>
+                    <h1 class="text-xl font-bold font-heading gradient-text">SMAF 智慧管理</h1>
+                    <p class="text-xs text-gray-400">教学管理系统</p>
+                </div>
+            </div>
+
+            <!-- 用户信息 -->
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-sm text-gray-300">当前用户</p>
+                    <p class="text-lg font-semibold text-white" id="userName">用户</p>
+                </div>
+                <div class="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center" id="userAvatar">
+                    <span class="text-white font-bold text-lg">U</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- 侧边导航栏 -->
+        <aside class="sidebar w-64 border-r border-gray-700">
+            <nav class="p-4">
+                <div class="space-y-2">
+                    <div class="nav-item active px-4 py-3 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="users" class="w-5 h-5 text-teal-400"></i>
+                            <span class="text-white font-medium">班级管理</span>
+                        </div>
+                    </div>
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="location.href='/dashboard'">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="home" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">主界面</span>
+                        </div>
+                    </div>
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="location.href='/exams'">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="file-text" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">考试管理</span>
+                        </div>
+                    </div>
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="logout()">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="log-out" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">退出登录</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- 主内容区域 -->
+        <main class="flex-1 p-6">
+            <!-- 页面标题和按钮 -->
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-white font-heading">班级管理</h1>
+                    <p class="text-gray-400 mt-1">管理和查看所有班级信息</p>
+                </div>
+                <button class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2" onclick="addClass()">
+                    <i data-feather="plus" class="w-5 h-5"></i>
+                    <span>添加班级</span>
+                </button>
+            </div>
+
+            <!-- 搜索和筛选区域 -->
+            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <label class="text-sm text-gray-300">年级筛选:</label>
+                            <select class="bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 text-sm" id="gradeFilter">
+                                <option value="">全部年级</option>
+                                <option value="1">高一</option>
+                                <option value="2">高二</option>
+                                <option value="3">高三</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <label class="text-sm text-gray-300">专业筛选:</label>
+                            <select class="bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 text-sm" id="majorFilter">
+                                <option value="">全部专业</option>
+                                <option value="science">理科</option>
+                                <option value="liberal">文科</option>
+                                <option value="art">艺术</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" placeholder="搜索班级..." class="search-input text-white rounded-lg px-3 py-2 text-sm w-64" id="searchInput">
+                        <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                            <i data-feather="search" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 统计概览 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium">班级总数</p>
+                            <p class="text-3xl font-bold text-white mt-2" id="totalClasses">12</p>
+                        </div>
+                        <div class="w-12 h-12 bg-teal-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i data-feather="home" class="w-6 h-6 text-teal-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium">学生总数</p>
+                            <p class="text-3xl font-bold text-white mt-2" id="totalStudents">486</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i data-feather="users" class="w-6 h-6 text-blue-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium">平均班级人数</p>
+                            <p class="text-3xl font-bold text-white mt-2" id="avgStudentsPerClass">40.5</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i data-feather="bar-chart-2" class="w-6 h-6 text-purple-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 班级网格 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="classGrid">
+                <!-- 动态加载班级数据 -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 初始化图标
+        feather.replace();
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserInfo();
+            loadClassData();
+            setupEventListeners();
+        });
+
+        // 加载用户信息
+        function loadUserInfo() {
+            fetch('/api/current_user')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const userAccount = data.user.account;
+                        document.getElementById('userName').textContent = userAccount;
+                        document.getElementById('userAvatar').textContent = userAccount.charAt(0).toUpperCase();
+                    } else {
+                        alert('请先登录');
+                        window.location.href = '/login';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // 加载班级数据
+        function loadClassData() {
+            fetch('/api/classes', {
+                method: 'GET',
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayClasses(data.classes);
+                    
+                    // 更新统计概览
+                    const totalClasses = data.classes.length;
+                    const totalStudents = data.classes.reduce((sum, cls) => sum + cls.studentCount, 0);
+                    const avgStudents = totalClasses > 0 ? Math.round(totalStudents / totalClasses * 10) / 10 : 0;
+                    
+                    document.getElementById('totalClasses').textContent = totalClasses;
+                    document.getElementById('totalStudents').textContent = totalStudents;
+                    document.getElementById('avgStudentsPerClass').textContent = avgStudents;
+                } else {
+                    console.error('获取班级数据失败:', data.message);
+                    // 如果API调用失败，显示空数据
+                    displayClasses([]);
+                }
+            })
+            .catch(error => {
+                console.error('获取班级数据失败:', error);
+                // 如果API调用失败，显示空数据
+                displayClasses([]);
+            });
+        }
+
+        // 显示班级数据
+        function displayClasses(classes) {
+            const grid = document.getElementById('classGrid');
+            grid.innerHTML = '';
+
+            classes.forEach(cls => {
+                const classCard = document.createElement('div');
+                classCard.className = 'class-card rounded-xl p-6 cursor-pointer';
+                
+                classCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-teal-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i data-feather="home" class="w-6 h-6 text-teal-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-white">${cls.name || '无'}</h3>
+                                <p class="text-sm text-gray-400">${cls.grade || '无'} · ${cls.major || '无'}</p>
+                            </div>
+                        </div>
+                        <button class="text-gray-400 hover:text-white transition-colors" onclick="event.stopPropagation(); showClassMenu('${cls.name || ''}')">
+                            <i data-feather="more-vertical" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <div class="stat-item rounded-lg p-3 text-center">
+                            <p class="text-2xl font-bold text-white">${cls.studentCount || 0}</p>
+                            <p class="text-xs text-gray-400">学生数</p>
+                        </div>
+                        <div class="stat-item rounded-lg p-3 text-center">
+                            <p class="text-2xl font-bold text-white">${cls.avgScore ? cls.avgScore.toFixed(1) : '0.0'}</p>
+                            <p class="text-xs text-gray-400">平均分</p>
+                        </div>
+                        <div class="stat-item rounded-lg p-3 text-center">
+                            <p class="text-2xl font-bold text-white">${cls.examCount || 0}</p>
+                            <p class="text-xs text-gray-400">考试数</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-600">
+                        <div class="text-sm text-gray-400">
+                            班主任: <span class="text-white">${cls.teacher || '无'}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="text-teal-400 hover:text-teal-300 transition-colors text-sm" onclick="event.stopPropagation(); viewClass('${cls.name || ''}')">
+                                查看详情
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                classCard.addEventListener('click', () => viewClass(cls.name || ''));
+                grid.appendChild(classCard);
+            });
+
+            // 重新渲染图标
+            feather.replace();
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            document.getElementById('gradeFilter').addEventListener('change', filterClasses);
+            document.getElementById('majorFilter').addEventListener('change', filterClasses);
+            document.getElementById('searchInput').addEventListener('input', filterClasses);
+        }
+
+        // 筛选班级
+        function filterClasses() {
+            // 实现筛选逻辑
+            console.log('筛选班级...');
+        }
+
+        // 查看班级详情
+        function viewClass(className) {
+            window.location.href = `/class-detail?class_name=${encodeURIComponent(className)}`;
+        }
+
+        // 显示班级菜单
+        function showClassMenu(className) {
+            alert(`班级菜单: ${className}`);
+        }
+
+        // 添加班级
+        function addClass() {
+            alert('添加班级功能');
+        }
+
+        // 退出登录
+        function logout() {
+            console.log('classes.html - 退出登录函数被调用');
+            if(confirm('确定要退出登录吗？')) {
+                console.log('classes.html - 用户确认退出登录');
+                // 调用后端退出API清理Redis会话和Cookie
+                fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    console.log('classes.html - 退出API响应状态:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('classes.html - 退出API响应数据:', data);
+                    if (data.success) {
+                        console.log('退出登录成功:', data.message);
+                        // 清除本地存储
+                        localStorage.removeItem('currentUser');
+                        // 跳转到主页
+                        window.location.href = '/learning-platform';
+                    } else {
+                        console.error('退出登录失败:', data.message);
+                        alert('退出登录失败: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('退出登录请求失败:', error);
+                    // 即使API调用失败，也清除本地数据并跳转
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '/learning-platform';
+                });
+            } else {
+                console.log('classes.html - 用户取消退出登录');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>连接诊断测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .result { margin: 10px 0; padding: 8px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        #results { max-height: 400px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>🌐 连接诊断测试</h1>
+    
+    <div class="test-section">
+        <h2>🔧 环境信息</h2>
+        <div id="envInfo"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 连接测试</h2>
+        <button onclick="testDirectConnection()">测试直接连接 (localhost:5000)</button>
+        <button onclick="testRelativeConnection()">测试相对路径连接</button>
+        <button onclick="testCurrentOrigin()">测试当前域连接</button>
+        <button onclick="clearResults()">清空结果</button>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 测试结果</h2>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // 显示环境信息
+        function showEnvInfo() {
+            const envDiv = document.getElementById('envInfo');
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            const port = window.location.port;
+            const origin = window.location.origin;
+            
+            envDiv.innerHTML = `
+                <div class="info">
+                    <strong>当前页面信息：</strong><br>
+                    协议: ${protocol}<br>
+                    主机名: ${hostname}<br>
+                    端口: ${port || '默认端口'}<br>
+                    完整地址: ${origin}<br>
+                    用户代理: ${navigator.userAgent.substring(0, 100)}...
+                </div>
+            `;
+        }
+
+        // 添加测试结果
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${message}`;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+
+        // 清空结果
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        // 测试直接连接到localhost:5000
+        async function testDirectConnection() {
+            addResult('开始测试直接连接到 localhost:5000...', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/subjects', {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                addResult(`状态码: ${response.status}`, 'info');
+                addResult(`内容类型: ${response.headers.get('content-type')}`, 'info');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`✅ 直接连接成功！学科数量: ${data.subjects ? data.subjects.length : 0}`, 'success');
+                    if (data.subjects && data.subjects.length > 0) {
+                        addResult(`学科列表: ${data.subjects.map(s => s.subject).join(', ')}`, 'info');
+                    }
+                } else {
+                    addResult(`❌ 直接连接失败: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ 直接连接错误: ${error.message}`, 'error');
+                // 提供具体的错误建议
+                if (error.message.includes('Failed to fetch')) {
+                    addResult('💡 建议检查：<br>1. Flask服务是否在运行<br>2. 是否允许跨域请求<br>3. 防火墙设置', 'info');
+                }
+            }
+        }
+
+        // 测试相对路径连接
+        async function testRelativeConnection() {
+            addResult('开始测试相对路径连接...', 'info');
+            
+            try {
+                const response = await fetch('/api/subjects');
+                addResult(`状态码: ${response.status}`, 'info');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`✅ 相对路径连接成功！学科数量: ${data.subjects ? data.subjects.length : 0}`, 'success');
+                } else {
+                    addResult(`❌ 相对路径连接失败: ${response.status} ${response.statusText}`, 'error');
+                    addResult(`当前页面域名: ${window.location.origin}`, 'info');
+                }
+            } catch (error) {
+                addResult(`❌ 相对路径连接错误: ${error.message}`, 'error');
+            }
+        }
+
+        // 测试当前域连接
+        async function testCurrentOrigin() {
+            addResult('开始测试当前域连接...', 'info');
+            
+            try {
+                const baseUrl = window.location.origin;
+                const apiUrl = `${baseUrl}/api/subjects`;
+                addResult(`请求URL: ${apiUrl}`, 'info');
+                
+                const response = await fetch(apiUrl);
+                addResult(`状态码: ${response.status}`, 'info');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`✅ 当前域连接成功！学科数量: ${data.subjects ? data.subjects.length : 0}`, 'success');
+                } else {
+                    addResult(`❌ 当前域连接失败: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ 当前域连接错误: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载时显示环境信息
+        document.addEventListener('DOMContentLoaded', function() {
+            showEnvInfo();
+        });
+    </script>
+</body>
+</html>

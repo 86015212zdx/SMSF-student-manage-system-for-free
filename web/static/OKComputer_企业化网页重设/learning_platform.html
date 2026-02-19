@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMSF 在线学习平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', 'Quattrocento Sans', sans-serif;
+        }
+
+        body {
+            background: #1A202C;
+            color: #E2E8F0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* 顶部导航栏 */
+        nav {
+            background: #2D3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4A5568;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .logo-subtitle {
+            font-size: 0.85rem;
+            color: #A0AEC0;
+            font-family: 'Hedvig Letters Sans', sans-serif;
+            margin-top: 3px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #A0AEC0;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            background: #4A5568;
+            color: #38B2AC;
+        }
+
+        .nav-link.active {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .login-link {
+            background: #38B2AC;
+            color: #1A202C;
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .login-link:hover {
+            background: #4FD1C7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56, 178, 172, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #E2E8F0;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #38B2AC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1A202C;
+        }
+
+        .logout-link {
+            color: #A0AEC0;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .logout-link:hover {
+            background: #4A5568;
+            color: #F56565;
+        }
+
+        /* 主要内容区域 */
+        .hero {
+            padding: 5rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #1A202C 0%, #2D3748 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 70%, rgba(56, 178, 172, 0.1) 0%, transparent 50%),
+                       radial-gradient(circle at 70% 30%, rgba(79, 209, 199, 0.1) 0%, transparent 50%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+            font-weight: 700;
+        }
+
+        .hero-subtitle {
+            font-size: 1.4rem;
+            color: #A0AEC0;
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-primary {
+            background: #38B2AC;
+            color: #1A202C;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cta-primary:hover {
+            background: #4FD1C7;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(56, 178, 172, 0.3);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: #38B2AC;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: 2px solid #38B2AC;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cta-secondary:hover {
+            background: #38B2AC;
+            color: #1A202C;
+            transform: translateY(-3px);
+        }
+
+        /* 特色服务区域 */
+        .features {
+            padding: 5rem 2rem;
+            background: #2D3748;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: #E2E8F0;
+            margin-bottom: 1rem;
+            font-family: 'Chiron Hei HK', sans-serif;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #A0AEC0;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: #4A5568;
+            border-radius: 16px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #4A5568;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
+            border-color: #38B2AC;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: #38B2AC;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 2rem;
+            color: #1A202C;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            color: #E2E8F0;
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .feature-description {
+            color: #A0AEC0;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* 课程分类区域 */
+        .courses {
+            padding: 5rem 2rem;
+            background: #1A202C;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .course-category {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            border: 1px solid #4A5568;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .course-category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+            border-color: #38B2AC;
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #38B2AC;
+        }
+
+        .category-title {
+            font-size: 1.4rem;
+            color: #E2E8F0;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .category-description {
+            color: #A0AEC0;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .course-count {
+            display: inline-block;
+            background: rgba(56, 178, 172, 0.2);
+            color: #38B2AC;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* 统计数据区域 */
+        .stats {
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #38B2AC;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #A0AEC0;
+        }
+
+        /* 页脚 */
+        footer {
+            background: #2D3748;
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid #4A5568;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .footer-text {
+            color: #A0AEC0;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: #A0AEC0;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .footer-link:hover {
+            color: #38B2AC;
+        }
+
+        .copyright {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #4A5568;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .features-grid, .courses-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 3rem 1rem;
+            }
+            
+            .features, .courses, .stats {
+                padding: 3rem 1rem;
+            }
+            
+            .feature-card, .course-category {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav>
+        <div class="logo-section">
+            <img src="resource_web/logo_64.png" alt="SMSF Logo" class="logo-icon">
+            <div>
+                <div class="logo-text">SMSF 在线学习</div>
+                <div class="logo-subtitle">Smart Management System for Free</div>
+            </div>
+        </div>
+        
+        <div class="nav-links">
+            <a href="#" class="nav-link active">
+                <i class="fas fa-home"></i>
+                首页
+            </a>
+            <a href="/learning-resources" class="nav-link">
+                <i class="fas fa-graduation-cap"></i>
+                学习资源
+            </a>
+            <a href="/index" class="nav-link">
+                <i class="fas fa-cogs"></i>
+                智慧管理
+            </a>
+            <a href="/downloads" class="nav-link">
+                <i class="fas fa-download"></i>
+                下载中心
+            </a>
+        </div>
+        
+        <div class="user-actions">
+            <a href="/register" class="login-link">
+                <i class="fas fa-user-plus"></i>
+                注册学习账户
+            </a>
+            <a href="/login" class="login-link">
+                <i class="fas fa-sign-in-alt"></i>
+                登录
+            </a>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">开启智慧学习新时代</h1>
+            <p class="hero-subtitle">SMSF在线学习平台为您提供个性化、智能化的学习体验，让知识触手可及，让成长永不止步</p>
+            
+            <div class="cta-buttons">
+                <a href="/login" class="cta-primary">
+                    <i class="fas fa-rocket"></i>
+                    立即开始学习
+                </a>
+                <a href="#features" class="cta-secondary">
+                    <i class="fas fa-info-circle"></i>
+                    了解更多
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特色服务区域 -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2 class="section-title">我们的优势</h2>
+            <p class="section-subtitle">融合先进技术和教育理念，打造全方位的智慧学习生态系统</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="feature-title">智能推荐</h3>
+                <p class="feature-description">基于AI算法的个性化学习路径推荐，根据您的学习进度和兴趣智能匹配最适合的课程内容</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="feature-title">学习分析</h3>
+                <p class="feature-description">全方位的学习数据追踪与分析，实时掌握学习效果，提供科学的学习建议和改进方案</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="feature-title">互动社区</h3>
+                <p class="feature-description">活跃的学习交流社区，与同窗好友分享学习心得，与专业导师深入探讨学术问题</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3 class="feature-title">移动学习</h3>
+                <p class="feature-description">支持多终端无缝切换，随时随地都能继续学习进程，充分利用碎片化时间提升自我</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <h3 class="feature-title">认证体系</h3>
+                <p class="feature-description">完善的技能认证和证书体系，为您的学习成果提供权威认可和职业发展支撑</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="feature-title">安全保障</h3>
+                <p class="feature-description">企业级数据安全保护，确保您的个人信息和学习数据安全可靠，让您安心专注学习</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 课程分类区域 -->
+    <section class="courses">
+        <div class="section-header">
+            <h2 class="section-title">热门学习领域</h2>
+            <p class="section-subtitle">涵盖多个学科领域的优质课程，满足不同层次学习者的需求</p>
+        </div>
+        
+        <div class="courses-grid">
+            <div class="course-category">
+                <div class="category-icon">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <h3 class="category-title">编程技术</h3>
+                <p class="category-description">从基础编程到前沿技术，系统化的计算机科学课程体系，助您成为技术专家</p>
+                <span class="course-count">128门课程</span>
+            </div>
+            
+            <div class="course-category">
+                <div class="category-icon">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <h3 class="category-title">数学统计</h3>
+                <p class="category-description">严谨的数学理论结合实用统计方法，培养逻辑思维和数据分析能力</p>
+                <span class="course-count">86门课程</span>
+            </div>
+            
+            <div class="course-category">
+                <div class="category-icon">
+                    <i class="fas fa-language"></i>
+                </div>
+                <h3 class="category-title">语言文学</h3>
+                <p class="category-description">丰富的语言学习资源和文学经典赏析，提升人文素养和跨文化交流能力</p>
+                <span class="course-count">154门课程</span>
+            </div>
+            
+            <div class="course-category">
+                <div class="category-icon">
+                    <i class="fas fa-flask"></i>
+                </div>
+                <h3 class="category-title">自然科学</h3>
+                <p class="category-description">探索自然奥秘，从物理化学到生物医学，激发科学探索精神</p>
+                <span class="course-count">92门课程</span>
+            </div>
+            
+            <div class="course-category">
+                <div class="category-icon">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <h3 class="category-title">艺术设计</h3>
+                <p class="category-description">创意与技术完美结合，培养审美能力和创新思维的艺术设计课程</p>
+                <span class="course-count">67门课程</span>
+            </div>
+            
+            <div class="course-category">
+                <div class="category-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <h3 class="category-title">商业管理</h3>
+                <p class="category-description">现代商业理论与实践相结合，培养未来商业领袖的核心竞争力</p>
+                <span class="course-count">113门课程</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 统计数据区域 -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number" id="userCount">50,000+</div>
+                <div class="stat-label">注册用户</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="courseCount">1,200+</div>
+                <div class="stat-label">精品课程</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="completionRate">92%</div>
+                <div class="stat-label">完成率</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="satisfaction">4.8★</div>
+                <div class="stat-label">用户满意度</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">SMSF 在线学习平台</div>
+            <p class="footer-text">致力于提供高质量的在线教育服务，让每个人都能享受到优质的教育资源</p>
+            
+            <div class="footer-links">
+                <a href="#" class="footer-link">关于我们</a>
+                <a href="#" class="footer-link">课程目录</a>
+                <a href="#" class="footer-link">帮助中心</a>
+                <a href="#" class="footer-link">联系我们</a>
+                <a href="#" class="footer-link">使用条款</a>
+                <a href="#" class="footer-link">隐私政策</a>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2026 SMSF 在线学习平台. 版权所有 | 专业在线教育解决方案
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 全局变量
+        let currentUser = null;
+
+        // 数字动画效果
+        function animateNumber(element, target, duration = 2000) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                
+                if (element.id === 'userCount') {
+                    element.textContent = Math.floor(current).toLocaleString() + '+';
+                } else if (element.id === 'courseCount') {
+                    element.textContent = Math.floor(current) + '+';
+                } else if (element.id === 'completionRate') {
+                    element.textContent = Math.floor(current) + '%';
+                } else if (element.id === 'satisfaction') {
+                    element.textContent = (current / 10).toFixed(1) + '★';
+                }
+            }, 16);
+        }
+
+        // 检查用户登录状态
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/api/current_user');
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        currentUser = result.user;
+                        updateUIForLoggedInUser();
+                        return true;
+                    }
+                }
+                return false;
+            } catch (error) {
+                console.log('检查登录状态失败:', error);
+                return false;
+            }
+        }
+
+        // 检查用户类型并自动跳转 - 新增功能
+        async function checkUserTypeAndRedirect() {
+            console.log('=== 开始用户类型检测 ===');
+            
+            try {
+                // 检查session_id的存在
+                const sessionId = getCookie('session_id');
+                console.log('提取的session_id:', sessionId);
+                
+                // 调用用户类型检查API
+                console.log('准备调用用户类型检查API...');
+                
+                const response = await fetch('/api/check-user-type', {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('API调用状态:', response.status);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('API响应数据:', result);
+                    
+                    if (result.success && result.userType) {
+                        console.log('检测到有效用户，准备跳转...');
+                        console.log('用户类型:', result.userType);
+                        
+                        // 执行跳转
+                        if (result.userType === 'student') {
+                            console.log('跳转到学生学习页面: /student-learning');
+                            window.location.href = '/static/OKComputer_企业化网页重设/student_learning.html';
+                            return;
+                        } else if (result.userType === 'teacher') {
+                            console.log('跳转到教师仪表板: /dashboard');
+                            window.location.href = '/dashboard';
+                            return;
+                        }
+                    } else {
+                        console.log('API返回无效数据，保持在当前页面');
+                    }
+                } else {
+                    console.log('API调用失败，状态码:', response.status);
+                }
+                
+            } catch (error) {
+                console.error('=== 用户类型检测过程中发生错误 ===');
+                console.error('错误信息:', error.message);
+            }
+        }
+
+        // 获取cookie值的辅助函数
+        function getCookie(name) {
+            if (!document.cookie) {
+                return null;
+            }
+            
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const trimmed = cookie.trim();
+                if (trimmed.startsWith(name + '=')) {
+                    return trimmed.substring(name.length + 1);
+                }
+            }
+            return null;
+        }
+
+        // 更新UI显示已登录用户信息
+        function updateUIForLoggedInUser() {
+            const userStatus = document.getElementById('userStatus');
+            if (userStatus && currentUser) {
+                userStatus.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar">${currentUser.account.charAt(0).toUpperCase()}</div>
+                        <span>${currentUser.account}</span>
+                        <a href="#" class="logout-link" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            退出
+                        </a>
+                    </div>
+                `;
+            }
+        }
+
+        // 用户登出
+        async function logout() {
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('退出登录成功:', data.message);
+                    // 清除用户信息
+                    currentUser = null;
+                    // 清除本地存储
+                    localStorage.removeItem('currentUser');
+                    // 更新UI
+                    const userStatus = document.getElementById('userStatus');
+                    if (userStatus) {
+                        userStatus.innerHTML = `
+                            <a href="/login" class="login-link" id="loginButton">
+                                <i class="fas fa-sign-in-alt"></i>
+                                登录/注册
+                            </a>
+                        `;
+                    }
+                    // 显示提示
+                    showNotification('已成功退出登录', 'success');
+                    // 跳转到主页
+                    setTimeout(() => {
+                        window.location.href = '/learning-platform';
+                    }, 1500);
+                } else {
+                    console.error('退出登录失败:', data.message);
+                    showNotification('退出登录失败: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('登出失败:', error);
+                // 即使API调用失败，也清除本地数据
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                showNotification('登出失败，请重试', 'error');
+                // 跳转到主页
+                setTimeout(() => {
+                    window.location.href = '/learning-platform';
+                }, 1500);
+            }
+        }
+
+        // 显示通知消息
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                animation: slideIn 0.3s ease;
+            `;
+            
+            switch(type) {
+                case 'success':
+                    notification.style.background = '#48BB78';
+                    break;
+                case 'error':
+                    notification.style.background = '#F56565';
+                    break;
+                default:
+                    notification.style.background = '#38B2AC';
+            }
+            
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // 3秒后自动移除
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // 学习资源链接点击事件处理
+        function handleLearningResourcesClick(event) {
+            event.preventDefault();
+            
+            // 检查登录状态
+            checkLoginStatus().then(isLoggedIn => {
+                if (isLoggedIn) {
+                    // 已登录，跳转到学习资源页面
+                    window.location.href = '/learning-resources';
+                } else {
+                    // 未登录，显示提示并跳转到登录页面
+                    showNotification('请先登录后再访问学习资源', 'info');
+                    setTimeout(() => {
+                        window.location.href = '/register';
+                    }, 1500);
+                }
+            });
+        }
+
+        // 页面加载完成后启动动画和初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 延迟启动动画，让用户先看到页面
+            setTimeout(() => {
+                animateNumber(document.getElementById('userCount'), 50000);
+                animateNumber(document.getElementById('courseCount'), 1200);
+                animateNumber(document.getElementById('completionRate'), 920);
+                animateNumber(document.getElementById('satisfaction'), 48);
+            }, 500);
+
+            // 检查用户类型并自动跳转（新增）
+            checkUserTypeAndRedirect();
+            
+            // 检查登录状态
+            checkLoginStatus();
+
+            // 为学习资源链接添加点击事件
+            const learningResourcesLink = document.getElementById('learningResourcesLink');
+            if (learningResourcesLink) {
+                learningResourcesLink.addEventListener('click', handleLearningResourcesClick);
+            }
+        });
+
+        // 平滑滚动效果
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改成绩 - SMAF 智慧管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Quattrocento+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #1A202C;
+            color: #E2E8F0;
+        }
+        .font-heading {
+            font-family: 'Quattrocento Sans', sans-serif;
+        }
+        .sidebar {
+            background: linear-gradient(180deg, #2D3748 0%, #4A5568 100%);
+            min-height: calc(100vh - 80px);
+        }
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            background-color: rgba(56, 178, 172, 0.1);
+            border-left: 4px solid #38B2AC;
+        }
+        .nav-item.active {
+            background-color: rgba(56, 178, 172, 0.2);
+            border-left: 4px solid #38B2AC;
+        }
+        .info-card {
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%);
+            border: 1px solid #4A5568;
+            transition: all 0.3s ease;
+        }
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(56, 178, 172, 0.15);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .table-row {
+            transition: all 0.2s ease;
+        }
+        .table-row:hover {
+            background-color: rgba(56, 178, 172, 0.05);
+        }
+        .score-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .score-excellent { background-color: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .score-good { background-color: rgba(59, 130, 246, 0.1); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .score-average { background-color: rgba(245, 158, 11, 0.1); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .score-below { background-color: rgba(239, 68, 68, 0.1); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- 顶部导航栏 -->
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4">
+        <div class="flex items-center justify-between">
+            <!-- Logo和品牌 -->
+            <div class="flex items-center space-x-3">
+                <img src="resource_web/logo_64.png" alt="SMSF Logo" class="w-10 h-10 object-contain">
+                <div>
+                    <h1 class="text-xl font-bold font-heading gradient-text">SMAF 智慧管理</h1>
+                    <p class="text-xs text-gray-400">教学管理系统</p>
+                </div>
+            </div>
+
+            <!-- 导航面包屑 -->
+            <div class="flex items-center space-x-2 text-sm">
+                <button class="text-gray-400 hover:text-white transition-colors" onclick="goToClasses()">班级管理</button>
+                <span class="text-gray-500">/</span>
+                <button class="text-gray-400 hover:text-white transition-colors" onclick="goToClassDetail()">班级详情</button>
+                <span class="text-gray-500">/</span>
+                <button class="text-gray-400 hover:text-white transition-colors" onclick="goToStudentDetail()">学生详情</button>
+                <span class="text-gray-500">/</span>
+                <span class="text-white" id="breadcrumbExamName">修改成绩</span>
+            </div>
+
+            <!-- 用户信息 -->
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-sm text-gray-300">当前用户</p>
+                    <p class="text-lg font-semibold text-white" id="userName">用户</p>
+                </div>
+                <div class="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center" id="userAvatar">
+                    <span class="text-white font-bold text-lg">U</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- 侧边导航栏 -->
+        <aside class="sidebar w-64 border-r border-gray-700">
+            <nav class="p-4">
+                <div class="space-y-2">
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="location.href='/dashboard'">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="home" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">主界面</span>
+                        </div>
+                    </div>
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="location.href='/classes'">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="users" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">班级管理</span>
+                        </div>
+                    </div>
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="location.href='/class-detail'">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="book" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">班级详情</span>
+                        </div>
+                    </div>
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="location.href='/student-detail'">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="user" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">学生详情</span>
+                        </div>
+                    </div>
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="location.href='/exams'">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="file-text" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">考试管理</span>
+                        </div>
+                    </div>
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="logout()">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="log-out" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">退出登录</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- 主内容区域 -->
+        <main class="flex-1 p-6">
+            <!-- 加载状态 -->
+            <div id="loadingIndicator" class="flex justify-center items-center py-20">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+                <span class="ml-3 text-gray-400">正在加载考试信息...</span>
+            </div>
+
+            <!-- 修改成绩表单 -->
+            <div id="scoreForm" class="hidden">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-white font-heading mb-2">修改考试成绩</h1>
+                    <div class="flex items-center space-x-4 text-sm text-gray-400">
+                        <span>考试: <span class="text-white" id="examNameDisplay">考试名称</span></span>
+                        <span>学生: <span class="text-white" id="studentNameDisplay">学生姓名</span></span>
+                        <span>学号: <span class="text-white" id="studentAccountDisplay">学号</span></span>
+                    </div>
+                </div>
+
+                <!-- 科目成绩表格 -->
+                <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden mb-8">
+                    <div class="px-6 py-4 border-b border-gray-700">
+                        <h3 class="text-lg font-semibold text-white">科目成绩</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-700">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">科目</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">当前成绩</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">满分</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">新成绩</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-gray-800 divide-y divide-gray-700" id="subjectsTableBody">
+                                <!-- 动态加载科目数据 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="flex space-x-4">
+                    <button class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg font-medium transition-colors" onclick="saveAllChanges()">
+                        <i data-feather="save" class="w-4 h-4 inline mr-2"></i>
+                        保存所有修改
+                    </button>
+                    <button class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors" onclick="goBack()">
+                        <i data-feather="arrow-left" class="w-4 h-4 inline mr-2"></i>
+                        返回
+                    </button>
+                </div>
+            </div>
+
+            <!-- 错误消息 -->
+            <div id="errorMessage" class="hidden bg-red-900 text-red-100 rounded-xl p-6 text-center">
+                <i data-feather="alert-circle" class="w-12 h-12 mx-auto text-red-400 mb-3"></i>
+                <h3 class="text-xl font-bold mb-2">加载失败</h3>
+                <p id="errorText">未能获取考试信息，请稍后重试</p>
+                <button class="mt-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition-colors" onclick="retryLoad()">
+                    重新加载
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 初始化图标
+        feather.replace();
+
+        let examName = '';
+        let studentAccount = '';
+        let currentSubjects = {};
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 从URL参数获取考试名称和学生账号
+            const urlParams = new URLSearchParams(window.location.search);
+            examName = urlParams.get('exam_name');
+            studentAccount = urlParams.get('student_account');
+            
+            if (!examName || !studentAccount) {
+                alert('缺少考试名称或学生账号参数');
+                window.location.href = '/student-detail';
+                return;
+            }
+            
+            loadUserInfo();
+            loadExamDetails();
+            setupEventListeners();
+        });
+
+        // 加载用户信息
+        function loadUserInfo() {
+            fetch('/api/current_user')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const userAccount = data.user.account;
+                        document.getElementById('userName').textContent = userAccount;
+                        document.getElementById('userAvatar').textContent = userAccount.charAt(0).toUpperCase();
+                    }
+                })
+                .catch(error => {
+                    console.error('获取用户信息失败:', error);
+                });
+        }
+
+        // 加载考试详情
+        function loadExamDetails() {
+            // 显示加载状态
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+            document.getElementById('scoreForm').classList.add('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+
+            fetch(`/api/student-detail/${encodeURIComponent(studentAccount)}`, {
+                method: 'GET',
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 隐藏加载状态，显示表单
+                    document.getElementById('loadingIndicator').classList.add('hidden');
+                    document.getElementById('scoreForm').classList.remove('hidden');
+
+                    // 更新页面标题和面包屑
+                    document.getElementById('breadcrumbExamName').textContent = `修改 ${examName} 成绩`;
+                    document.getElementById('examNameDisplay').textContent = examName;
+                    
+                    // 获取学生信息
+                    document.getElementById('studentNameDisplay').textContent = data.studentInfo.name || '未知';
+                    document.getElementById('studentAccountDisplay').textContent = data.studentInfo.account || '未知';
+
+                    // 找到特定考试的科目数据
+                    let examFound = false;
+                    for (const record of data.examRecords) {
+                        if (record.examName === examName) {
+                            currentSubjects = record.subjects || {};
+                            updateSubjectsTable(currentSubjects);
+                            examFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!examFound) {
+                        // 如果在考试记录中找不到，尝试从学生考试数据中获取
+                        fetch(`/api/student-exam-data/${encodeURIComponent(studentAccount)}`)
+                            .then(response => response.json())
+                            .then(examData => {
+                                if (examData.success && examData.examData && examData.examData[examName]) {
+                                    currentSubjects = examData.examData[examName];
+                                    updateSubjectsTable(currentSubjects);
+                                } else {
+                                    showError('未找到指定考试的数据');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('获取考试数据失败:', error);
+                                showError('获取考试数据失败');
+                            });
+                    }
+                } else {
+                    console.error('获取学生详情失败:', data.message);
+                    showError(data.message || '获取学生详情失败');
+                }
+            })
+            .catch(error => {
+                console.error('获取学生详情失败:', error);
+                showError('网络错误，无法获取学生详情');
+            });
+        }
+
+        // 更新科目表格
+        function updateSubjectsTable(subjects) {
+            const tbody = document.getElementById('subjectsTableBody');
+            tbody.innerHTML = '';
+
+            if (subjects && Object.keys(subjects).length > 0) {
+                for (const [subject, [currentScore, maxScore]] of Object.entries(subjects)) {
+                    if (subject !== 'total') {  // 排除total字段
+                        const row = document.createElement('tr');
+                        row.className = 'table-row';
+                        row.id = `subject-row-${subject}`;
+
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${subject}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-white">${currentScore}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-white">${maxScore}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <input 
+                                    type="number" 
+                                    class="bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 w-32" 
+                                    id="input-${subject}"
+                                    value="${currentScore}"
+                                    min="0"
+                                    max="${maxScore}"
+                                    step="0.01"
+                                    placeholder="输入新成绩"
+                                >
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button class="text-teal-400 hover:text-teal-300 transition-colors mr-3" onclick="saveSingleSubject('${subject}')">
+                                    <i data-feather="save" class="w-4 h-4"></i>
+                                </button>
+                                <button class="text-gray-400 hover:text-gray-300 transition-colors" onclick="resetSubject('${subject}')">
+                                    <i data-feather="refresh-cw" class="w-4 h-4"></i>
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    }
+                }
+            } else {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="5" class="px-6 py-4 text-center text-gray-400">未找到该考试的科目数据</td>`;
+                tbody.appendChild(row);
+            }
+
+            // 重新渲染图标
+            feather.replace();
+        }
+
+        // 保存单个科目成绩
+        async function saveSingleSubject(subject) {
+            const inputElement = document.getElementById(`input-${subject}`);
+            const newScoreStr = inputElement.value;
+
+            if (!newScoreStr) {
+                alert('请输入成绩');
+                return;
+            }
+
+            const newScore = parseFloat(newScoreStr);
+            if (isNaN(newScore)) {
+                alert('请输入有效的成绩');
+                return;
+            }
+
+            // 获取该科目的满分
+            let maxScore = 100; // 默认满分
+            if (currentSubjects[subject] && currentSubjects[subject][1]) {
+                maxScore = currentSubjects[subject][1];
+            }
+
+            if (newScore < 0 || newScore > maxScore) {
+                alert(`成绩必须在0到${maxScore}之间`);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/update-student-score', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        student_account: studentAccount,
+                        exam_name: examName,
+                        subject: subject,
+                        new_score: newScore
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // 更新本地数据
+                    if (currentSubjects[subject]) {
+                        currentSubjects[subject][0] = newScore;
+                    }
+                    
+                    // 更新当前成绩显示
+                    const row = document.getElementById(`subject-row-${subject}`);
+                    if (row) {
+                        const currentScoreCell = row.cells[1]; // 第二列是当前成绩
+                        currentScoreCell.textContent = newScore.toFixed(2).replace(/[.,]00$/, '');
+                        
+                        // 同步更新输入框的值，防止批量保存时重复提交
+                        const inputElement = document.getElementById(`input-${subject}`);
+                        if (inputElement) {
+                            inputElement.value = newScore;
+                        }
+                    }
+                    
+                    alert('成绩更新成功！');
+                } else {
+                    alert('成绩更新失败: ' + result.message);
+                }
+            } catch (error) {
+                console.error('更新成绩失败:', error);
+                alert('网络错误，成绩更新失败');
+            }
+        }
+
+        // 保存所有修改
+        async function saveAllChanges() {
+            // 收集所有修改的成绩
+            const updates = [];
+            for (const [subject, [currentScore, maxScore]] of Object.entries(currentSubjects)) {
+                if (subject !== 'total') {
+                    const inputElement = document.getElementById(`input-${subject}`);
+                    if (inputElement) {
+                        const newScoreStr = inputElement.value;
+                        if (newScoreStr) {
+                            const newScore = parseFloat(newScoreStr);
+                            if (!isNaN(newScore) && newScore >= 0 && newScore <= maxScore) {
+                                // 检查新成绩是否与当前数据库中的成绩不同
+                                if (newScore !== currentScore) {
+                                    updates.push({
+                                        subject: subject,
+                                        newScore: newScore,
+                                        oldScore: currentScore
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (updates.length === 0) {
+                alert('没有需要保存的修改');
+                return;
+            }
+
+            // 确认保存
+            const confirmMsg = `确定要保存以下 ${updates.length} 个科目的成绩修改吗？\n\n` +
+                updates.map(u => `${u.subject}: ${u.oldScore} → ${u.newScore}`).join('\n');
+            
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+
+            // 批量更新成绩
+            let successCount = 0;
+            let failedUpdates = [];
+            
+            for (const update of updates) {
+                try {
+                    const response = await fetch('/api/update-student-score', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            student_account: studentAccount,
+                            exam_name: examName,
+                            subject: update.subject,
+                            new_score: update.newScore
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (!result.success) {
+                        failedUpdates.push({
+                            subject: update.subject,
+                            error: result.message
+                        });
+                    } else {
+                        successCount++;
+                        // 更新本地数据
+                        if (currentSubjects[update.subject]) {
+                            currentSubjects[update.subject][0] = update.newScore;
+                        }
+                    }
+                } catch (error) {
+                    console.error('更新成绩失败:', error);
+                    failedUpdates.push({
+                        subject: update.subject,
+                        error: '网络错误'
+                    });
+                }
+            }
+
+            // 显示结果
+            if (failedUpdates.length === 0) {
+                alert(`所有成绩(${successCount}个)更新成功！`);
+            } else {
+                let message = `成功更新 ${successCount} 个科目，但以下科目更新失败：\n\n`;
+                failedUpdates.forEach(failed => {
+                    message += `${failed.subject}: ${failed.error}\n`;
+                });
+                message += '\n请重试失败的科目或联系管理员。';
+                alert(message);
+            }
+            
+            // 重新加载页面以显示最新数据
+            loadExamDetails();
+        }
+
+        // 重置单个科目
+        function resetSubject(subject) {
+            if (currentSubjects[subject]) {
+                const inputElement = document.getElementById(`input-${subject}`);
+                if (inputElement) {
+                    inputElement.value = currentSubjects[subject][0]; // 重置为当前成绩
+                }
+            }
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            document.getElementById('loadingIndicator').classList.add('hidden');
+            document.getElementById('scoreForm').classList.add('hidden');
+            document.getElementById('errorMessage').classList.remove('hidden');
+            document.getElementById('errorText').textContent = message;
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 为所有输入框添加回车键保存功能
+            document.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter' && event.target.type === 'number') {
+                    // 找到当前输入框对应的科目
+                    const inputId = event.target.id;
+                    if (inputId.startsWith('input-')) {
+                        const subject = inputId.substring(6); // 移除 'input-' 前缀
+                        saveSingleSubject(subject);
+                    }
+                }
+            });
+        }
+
+        // 导航函数
+        function goToClasses() {
+            window.location.href = '/classes';
+        }
+
+        function goToClassDetail() {
+            window.location.href = '/classes';
+        }
+
+        function goToStudentDetail() {
+            window.location.href = `/student-detail?account=${encodeURIComponent(studentAccount)}`;
+        }
+
+        function goBack() {
+            window.location.href = `/student-detail?account=${encodeURIComponent(studentAccount)}`;
+        }
+
+        // 退出登录
+        function logout() {
+            if(confirm('确定要退出登录吗？')) {
+                // 调用后端退出API清理Redis会话和Cookie
+                fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('退出登录成功:', data.message);
+                        // 清除本地存储
+                        localStorage.removeItem('currentUser');
+                        // 跳转到主页
+                        window.location.href = '/learning-platform';
+                    } else {
+                        console.error('退出登录失败:', data.message);
+                        alert('退出登录失败: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('退出登录请求失败:', error);
+                    // 即使API调用失败，也清除本地数据并跳转
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '/learning-platform';
+                });
+            }
+        }
+
+        // 重新加载
+        function retryLoad() {
+            loadExamDetails();
+        }
+    </script>
+</body>
+</html>

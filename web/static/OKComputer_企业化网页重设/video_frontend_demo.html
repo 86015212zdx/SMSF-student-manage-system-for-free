@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频播放器纯前端演示 - SMSF 在线学习平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', 'Quattrocento Sans', sans-serif;
+        }
+
+        body {
+            background: #1A202C;
+            color: #E2E8F0;
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏 */
+        nav {
+            background: #2D3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4A5568;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .logo-subtitle {
+            font-size: 0.85rem;
+            color: #A0AEC0;
+            font-family: 'Hedvig Letters Sans', sans-serif;
+            margin-top: 3px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #A0AEC0;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            background: #4A5568;
+            color: #38B2AC;
+        }
+
+        .back-button {
+            background: #4A5568;
+            color: #E2E8F0;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        /* 主要内容区域 */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%);
+            border-radius: 16px;
+            border: 1px solid #4A5568;
+        }
+
+        .demo-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+            font-weight: 700;
+        }
+
+        .demo-subtitle {
+            font-size: 1.2rem;
+            color: #A0AEC0;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* 视频播放器容器 */
+        .video-player-container {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #4A5568;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 宽高比 */
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #38B2AC, #4FD1C7);
+            color: #1A202C;
+        }
+
+        .placeholder-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .placeholder-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .video-element {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 视频控制栏 */
+        .video-controls {
+            background: #1A202C;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .control-button {
+            background: transparent;
+            border: none;
+            color: #E2E8F0;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .control-button:hover {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .progress-container {
+            flex: 1;
+            height: 6px;
+            background: #4A5568;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #38B2AC;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .progress-handle {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            background: #38B2AC;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .progress-container:hover .progress-handle {
+            opacity: 1;
+        }
+
+        .time-display {
+            color: #A0AEC0;
+            font-size: 0.9rem;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: #4A5568;
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .volume-level {
+            height: 100%;
+            background: #38B2AC;
+            border-radius: 2px;
+            width: 100%;
+        }
+
+        /* 视频信息面板 */
+        .video-info-panel {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .video-description {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #4A5568;
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            color: #E2E8F0;
+            margin-bottom: 1.5rem;
+            font-family: 'Chiron Hei HK', sans-serif;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .description-content {
+            color: #A0AEC0;
+            line-height: 1.7;
+            font-size: 1.1rem;
+        }
+
+        .video-stats {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #4A5568;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #4A5568;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #A0AEC0;
+        }
+
+        .stat-value {
+            color: #E2E8F0;
+            font-weight: 500;
+        }
+
+        /* 相关视频推荐 */
+        .related-videos {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #4A5568;
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .related-card {
+            background: #1A202C;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #4A5568;
+            cursor: pointer;
+        }
+
+        .related-card:hover {
+            transform: translateY(-5px);
+            border-color: #38B2AC;
+        }
+
+        .related-thumbnail {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(45deg, #38B2AC, #4FD1C7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A202C;
+            font-size: 2rem;
+        }
+
+        .related-info {
+            padding: 1rem;
+        }
+
+        .related-title {
+            color: #E2E8F0;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .related-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #A0AEC0;
+            font-size: 0.85rem;
+        }
+
+        /* 示例视频列表 */
+        .demo-videos {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #4A5568;
+            margin-top: 2rem;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .video-card {
+            background: #1A202C;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #4A5568;
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            border-color: #38B2AC;
+        }
+
+        .card-thumbnail {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(45deg, #38B2AC, #4FD1C7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A202C;
+            font-size: 2.5rem;
+        }
+
+        .card-info {
+            padding: 1.2rem;
+        }
+
+        .card-title {
+            color: #E2E8F0;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #A0AEC0;
+            font-size: 0.9rem;
+        }
+
+        .card-description {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-top: 0.8rem;
+            line-height: 1.5;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .demo-title {
+                font-size: 2rem;
+            }
+            
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.8rem;
+            }
+            
+            .video-info-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .videos-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .related-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav>
+        <div class="logo-section">
+            <img src="resource_web/logo_64.png" alt="SMSF Logo" class="logo-icon">
+            <div>
+                <div class="logo-text">SMSF 视频演示</div>
+                <div class="logo-subtitle">Video Demo</div>
+            </div>
+        </div>
+        
+        <div class="nav-links">
+            <a href="#" class="nav-link">
+                <i class="fas fa-home"></i>
+                首页
+            </a>
+            <a href="#" class="nav-link">
+                <i class="fas fa-book"></i>
+                学习资源
+            </a>
+            <a href="#" class="nav-link">
+                <i class="fas fa-cogs"></i>
+                智慧管理
+            </a>
+        </div>
+        
+        <button class="back-button" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+            返回
+        </button>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="container">
+        <!-- 演示头部 -->
+        <div class="demo-header">
+            <h1 class="demo-title">视频播放器演示</h1>
+            <p class="demo-subtitle">这是一个纯前端的视频播放器演示，无需数据库支持即可体验完整的视频播放功能。点击下方的视频卡片开始体验。</p>
+        </div>
+
+        <!-- 视频播放器 -->
+        <div class="video-player-container">
+            <div class="video-wrapper">
+                <div class="video-placeholder" id="videoPlaceholder">
+                    <i class="fas fa-play-circle placeholder-icon"></i>
+                    <div class="placeholder-text">选择下方视频开始播放</div>
+                </div>
+                <video class="video-element" id="demoVideo" style="display: none;">
+                    <source src="" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+            </div>
+            
+            <!-- 视频控制栏 -->
+            <div class="video-controls">
+                <button class="control-button" id="playButton" onclick="togglePlay()">
+                    <i class="fas fa-play"></i>
+                </button>
+                
+                <div class="progress-container" id="progressContainer" onclick="seekVideo(event)">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <div class="progress-handle" id="progressHandle"></div>
+                </div>
+                
+                <div class="time-display">
+                    <span id="currentTime">00:00</span> / <span id="duration">00:00</span>
+                </div>
+                
+                <div class="volume-container">
+                    <button class="control-button" id="muteButton" onclick="toggleMute()">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                    <div class="volume-slider" id="volumeSlider" onclick="setVolume(event)">
+                        <div class="volume-level" id="volumeLevel"></div>
+                    </div>
+                </div>
+                
+                <button class="control-button" onclick="toggleFullscreen()">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 视频信息面板 -->
+        <div class="video-info-panel" id="videoInfoPanel" style="display: none;">
+            <div class="video-description">
+                <h2 class="panel-title">
+                    <i class="fas fa-info-circle"></i>
+                    视频介绍
+                </h2>
+                <div class="description-content" id="videoDescription">
+                    暂无视频介绍
+                </div>
+            </div>
+            
+            <div class="video-stats">
+                <h2 class="panel-title">
+                    <i class="fas fa-chart-line"></i>
+                    视频统计
+                </h2>
+                <div class="stat-item">
+                    <span class="stat-label">观看次数</span>
+                    <span class="stat-value" id="videoViews">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">点赞数</span>
+                    <span class="stat-value" id="videoLikes">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">收藏数</span>
+                    <span class="stat-value" id="videoFavorites">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">评分</span>
+                    <span class="stat-value" id="videoRating">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">发布时间</span>
+                    <span class="stat-value" id="videoDate">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 示例视频列表 -->
+        <div class="demo-videos">
+            <h2 class="panel-title">
+                <i class="fas fa-film"></i>
+                示例视频库
+            </h2>
+            <div class="videos-grid" id="videosGrid">
+                <!-- 视频卡片将通过JavaScript动态生成 -->
+            </div>
+        </div>
+
+        <!-- 相关视频推荐 -->
+        <div class="related-videos" id="relatedVideosSection" style="display: none;">
+            <h2 class="panel-title">
+                <i class="fas fa-thumbs-up"></i>
+                相关推荐
+            </h2>
+            <div class="related-grid" id="relatedGrid">
+                <!-- 相关视频将通过JavaScript动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 演示视频数据
+        const demoVideos = [
+            {
+                id: 1,
+                title: "数学基础概念讲解",
+                subject: "数学",
+                duration: "15:30",
+                views: 12500,
+                likes: 890,
+                favorites: 456,
+                rating: 4.8,
+                date: "2026-01-15",
+                description: "深入浅出地讲解数学基础概念，适合初学者学习。本课程涵盖了代数、几何等核心知识点，通过大量实例帮助学生建立扎实的数学基础。"
+            },
+            {
+                id: 2,
+                title: "英语语法精讲",
+                subject: "英语",
+                duration: "18:45",
+                views: 8900,
+                likes: 634,
+                favorites: 321,
+                rating: 4.6,
+                date: "2026-01-12",
+                description: "系统性的英语语法课程，帮助提升语言能力。从基础语法结构到高级句型变换，全面提升英语表达水平。"
+            },
+            {
+                id: 3,
+                title: "物理实验演示",
+                subject: "物理",
+                duration: "22:15",
+                views: 15600,
+                likes: 1200,
+                favorites: 678,
+                rating: 4.9,
+                date: "2026-01-10",
+                description: "生动的物理实验演示，理论与实践相结合。通过直观的实验现象解释复杂的物理原理，让抽象概念变得具体易懂。"
+            },
+            {
+                id: 4,
+                title: "化学反应原理",
+                subject: "化学",
+                duration: "20:30",
+                views: 9800,
+                likes: 756,
+                favorites: 389,
+                rating: 4.7,
+                date: "2026-01-08",
+                description: "详细解析化学反应的基本原理和应用。涵盖氧化还原反应、酸碱反应等重要内容，结合生活实例加深理解。"
+            },
+            {
+                id: 5,
+                title: "历史事件回顾",
+                subject: "历史",
+                duration: "25:40",
+                views: 11200,
+                likes: 823,
+                favorites: 445,
+                rating: 4.5,
+                date: "2026-01-05",
+                description: "重要历史事件的深度解析和回顾。通过时间轴梳理历史脉络，帮助学生建立完整的历史认知框架。"
+            },
+            {
+                id: 6,
+                title: "生物细胞结构",
+                subject: "生物",
+                duration: "17:20",
+                views: 7600,
+                likes: 567,
+                favorites: 298,
+                rating: 4.4,
+                date: "2026-01-03",
+                description: "详细介绍生物细胞的结构和功能特点。从细胞膜到细胞核，全面解析细胞的各个组成部分及其作用机制。"
+            }
+        ];
+
+        // 当前播放状态
+        let currentVideo = null;
+        let isPlaying = false;
+        let isMuted = false;
+        let progressInterval = null;
+
+        // DOM元素引用
+        let videoElement = null;
+        let progressBar = null;
+        let progressHandle = null;
+        let progressContainer = null;
+        let currentTimeDisplay = null;
+        let durationDisplay = null;
+        let playButton = null;
+        let volumeSlider = null;
+        let volumeLevel = null;
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            renderVideoCards();
+            setupVideoElements();
+            setupKeyboardEvents();
+        });
+
+        // 渲染视频卡片
+        function renderVideoCards() {
+            const grid = document.getElementById('videosGrid');
+            grid.innerHTML = demoVideos.map(video => `
+                <div class="video-card" onclick="playVideo(${video.id})">
+                    <div class="card-thumbnail">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="card-title">${video.title}</h3>
+                        <div class="card-meta">
+                            <span>${video.subject}</span>
+                            <span>${video.duration}</span>
+                        </div>
+                        <div class="card-meta" style="margin-top: 0.5rem;">
+                            <span><i class="fas fa-eye"></i> ${video.views.toLocaleString()}</span>
+                            <span><i class="fas fa-star"></i> ${video.rating}</span>
+                        </div>
+                        <p class="card-description">${video.description.substring(0, 60)}...</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 设置视频元素引用
+        function setupVideoElements() {
+            videoElement = document.getElementById('demoVideo');
+            progressBar = document.getElementById('progressBar');
+            progressHandle = document.getElementById('progressHandle');
+            progressContainer = document.getElementById('progressContainer');
+            currentTimeDisplay = document.getElementById('currentTime');
+            durationDisplay = document.getElementById('duration');
+            playButton = document.getElementById('playButton');
+            volumeSlider = document.getElementById('volumeSlider');
+            volumeLevel = document.getElementById('volumeLevel');
+        }
+
+        // 播放视频
+        function playVideo(videoId) {
+            const video = demoVideos.find(v => v.id === videoId);
+            if (!video) return;
+
+            currentVideo = video;
+            
+            // 更新播放器显示
+            const placeholder = document.getElementById('videoPlaceholder');
+            placeholder.innerHTML = `
+                <i class="fas fa-play-circle placeholder-icon"></i>
+                <div class="placeholder-text">正在播放: ${video.title}</div>
+                <div style="font-size: 1rem; margin-top: 0.5rem;">${video.subject} · ${video.duration}</div>
+            `;
+            
+            // 显示视频信息面板
+            document.getElementById('videoInfoPanel').style.display = 'grid';
+            document.getElementById('relatedVideosSection').style.display = 'block';
+            
+            // 更新视频信息
+            document.getElementById('videoDescription').textContent = video.description;
+            document.getElementById('videoViews').textContent = video.views.toLocaleString();
+            document.getElementById('videoLikes').textContent = video.likes.toLocaleString();
+            document.getElementById('videoFavorites').textContent = video.favorites.toLocaleString();
+            document.getElementById('videoRating').textContent = video.rating;
+            document.getElementById('videoDate').textContent = video.date;
+            
+            // 更新控制栏状态
+            playButton.innerHTML = '<i class="fas fa-pause"></i>';
+            durationDisplay.textContent = video.duration;
+            isPlaying = true;
+            
+            // 渲染相关视频
+            renderRelatedVideos(video.subject);
+            
+            // 模拟播放进度
+            simulateProgress();
+            
+            // 滚动到播放器位置
+            document.querySelector('.video-player-container').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        // 渲染相关视频
+        function renderRelatedVideos(subject) {
+            const relatedVideos = demoVideos
+                .filter(video => video.subject === subject && video.id !== currentVideo.id)
+                .slice(0, 4);
+            
+            const grid = document.getElementById('relatedGrid');
+            
+            if (relatedVideos.length === 0) {
+                grid.innerHTML = '<p style="color: #A0AEC0; text-align: center; grid-column: 1 / -1;">暂无相关视频推荐</p>';
+                return;
+            }
+            
+            grid.innerHTML = relatedVideos.map(video => `
+                <div class="related-card" onclick="playVideo(${video.id})">
+                    <div class="related-thumbnail">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="related-info">
+                        <h3 class="related-title">${video.title}</h3>
+                        <div class="related-meta">
+                            <span>${video.subject}</span>
+                            <span>${video.views.toLocaleString()} 次观看</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 切换播放/暂停
+        function togglePlay() {
+            if (!currentVideo) {
+                alert('请先选择一个视频');
+                return;
+            }
+
+            if (isPlaying) {
+                pauseVideo();
+            } else {
+                resumeVideo();
+            }
+        }
+
+        function pauseVideo() {
+            playButton.innerHTML = '<i class="fas fa-play"></i>';
+            isPlaying = false;
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
+
+        function resumeVideo() {
+            playButton.innerHTML = '<i class="fas fa-pause"></i>';
+            isPlaying = true;
+            simulateProgress();
+        }
+
+        // 模拟播放进度
+        function simulateProgress() {
+            if (!isPlaying || !currentVideo || progressInterval) return;
+            
+            let progress = 0;
+            const totalSeconds = parseTime(currentVideo.duration);
+            
+            progressInterval = setInterval(() => {
+                if (!isPlaying) {
+                    clearInterval(progressInterval);
+                    progressInterval = null;
+                    return;
+                }
+                
+                progress += 0.5;
+                const percent = Math.min((progress / totalSeconds) * 100, 100);
+                progressBar.style.width = percent + '%';
+                progressHandle.style.left = percent + '%';
+                
+                // 更新时间显示
+                const currentSeconds = Math.floor((percent / 100) * totalSeconds);
+                currentTimeDisplay.textContent = formatTime(currentSeconds);
+                
+                // 播放完成
+                if (percent >= 100) {
+                    clearInterval(progressInterval);
+                    progressInterval = null;
+                    playButton.innerHTML = '<i class="fas fa-redo"></i>';
+                    isPlaying = false;
+                }
+            }, 100);
+        }
+
+        // 视频跳转
+        function seekVideo(event) {
+            if (!currentVideo) return;
+            
+            const rect = progressContainer.getBoundingClientRect();
+            const pos = (event.clientX - rect.left) / rect.width;
+            
+            progressBar.style.width = (pos * 100) + '%';
+            progressHandle.style.left = (pos * 100) + '%';
+            
+            const totalSeconds = parseTime(currentVideo.duration);
+            const currentSeconds = Math.floor(pos * totalSeconds);
+            currentTimeDisplay.textContent = formatTime(currentSeconds);
+        }
+
+        // 设置音量
+        function setVolume(event) {
+            const rect = volumeSlider.getBoundingClientRect();
+            const pos = (event.clientX - rect.left) / rect.width;
+            volumeLevel.style.width = (pos * 100) + '%';
+        }
+
+        // 静音切换
+        function toggleMute() {
+            isMuted = !isMuted;
+            const muteButton = document.getElementById('muteButton');
+            
+            if (isMuted) {
+                muteButton.innerHTML = '<i class="fas fa-volume-mute"></i>';
+            } else {
+                muteButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+            }
+        }
+
+        // 全屏切换
+        function toggleFullscreen() {
+            const playerContainer = document.querySelector('.video-player-container');
+            if (!document.fullscreenElement) {
+                playerContainer.requestFullscreen().catch(err => {
+                    console.log('全屏模式不支持:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // 设置键盘事件
+        function setupKeyboardEvents() {
+            document.addEventListener('keydown', function(e) {
+                // 阻止在输入框中的按键事件
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+                
+                switch(e.key) {
+                    case ' ':
+                        e.preventDefault();
+                        togglePlay();
+                        break;
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        // 快退10秒
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        // 快进10秒
+                        break;
+                    case 'm':
+                    case 'M':
+                        e.preventDefault();
+                        toggleMute();
+                        break;
+                    case 'f':
+                    case 'F':
+                        e.preventDefault();
+                        toggleFullscreen();
+                        break;
+                }
+            });
+        }
+
+        // 时间格式化工具函数
+        function parseTime(timeStr) {
+            const parts = timeStr.split(':');
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // 返回上一页
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

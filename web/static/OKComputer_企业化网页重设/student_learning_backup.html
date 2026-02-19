@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生学习中心 - SMSF 在线学习平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- 引入工具函数 -->
+    <script src="/static/OKComputer_企业化网页重设/utils.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', 'Quattrocento Sans', sans-serif;
+        }
+
+        body {
+            background: #1A202C;
+            color: #E2E8F0;
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏 */
+        nav {
+            background: #2D3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4A5568;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .logo-subtitle {
+            font-size: 0.85rem;
+            color: #A0AEC0;
+            font-family: 'Hedvig Letters Sans', sans-serif;
+            margin-top: 3px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-tab {
+            background: transparent;
+            color: #A0AEC0;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tab:hover {
+            background: #4A5568;
+            color: #38B2AC;
+        }
+
+        .nav-tab.active {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #E2E8F0;
+        }
+
+        .user-role {
+            font-size: 0.85rem;
+            color: #A0AEC0;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A202C;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 3px rgba(56, 178, 172, 0.3);
+        }
+
+        /* 用户菜单弹窗 */
+        .user-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: #2D3748;
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 280px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid #4A5568;
+            z-index: 1000;
+            display: none;
+        }
+
+        .user-menu.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menu-header {
+            text-align: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #4A5568;
+            margin-bottom: 1rem;
+        }
+
+        .menu-user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A202C;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin: 0 auto 0.8rem;
+        }
+
+        .menu-user-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #E2E8F0;
+            margin-bottom: 0.3rem;
+        }
+
+        .menu-user-level {
+            font-size: 0.9rem;
+            color: #38B2AC;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+            background: #1A202C;
+            border-radius: 8px;
+            padding: 0.8rem;
+            text-align: center;
+            border: 1px solid #4A5568;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #38B2AC;
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #A0AEC0;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .menu-button {
+            background: #4A5568;
+            color: #E2E8F0;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .menu-button:hover {
+            background: #38B2AC;
+            color: #1A202C;
+            transform: translateX(5px);
+        }
+
+        .logout-button {
+            background: #E53E3E !important;
+            color: #FFFFFF !important;
+        }
+
+        .logout-button:hover {
+            background: #C53030 !important;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #A0AEC0;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* 学习资源区域样式 */
+        .categories-nav {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+            border: 1px solid #4A5568;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .category-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+        }
+
+        .category-btn {
+            background: #4A5568;
+            color: #A0AEC0;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 80px;
+            box-sizing: border-box;
+        }
+
+        .category-btn:hover {
+            background: #38B2AC;
+            color: #1A202C;
+            transform: translateY(-3px);
+        }
+
+        .category-btn.active {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .category-icon {
+            font-size: 1.5rem;
+        }
+
+        /* 学科下拉菜单 */
+        .subject-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #2D3748;
+            border: 1px solid #4A5568;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .subject-dropdown.show {
+            display: block;
+        }
+
+        .subject-item {
+            padding: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #A0AEC0;
+        }
+
+        .subject-item:hover {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .subject-item.active {
+            background: rgba(56, 178, 172, 0.3);
+            color: #38B2AC;
+        }
+
+        /* 资源网格 */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .resource-card {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid #4A5568;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: #38B2AC;
+        }
+
+        .resource-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .resource-icon {
+            width: 50px;
+            height: 50px;
+            background: #38B2AC;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #1A202C;
+        }
+
+        .resource-type {
+            background: rgba(56, 178, 172, 0.2);
+            color: #38B2AC;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .resource-title {
+            font-size: 1.3rem;
+            color: #E2E8F0;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .resource-description {
+            color: #A0AEC0;
+            line-height: 1.6;
+            margin-bottom: 1.2rem;
+            font-size: 0.95rem;
+        }
+
+        .resource-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .resource-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: rgba(74, 85, 104, 0.5);
+            color: #A0AEC0;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .resource-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.6rem;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .primary-btn {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .primary-btn:hover {
+            background: #4FD1C7;
+            transform: translateY(-2px);
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: #38B2AC;
+            border: 1px solid #38B2AC;
+        }
+
+        .secondary-btn:hover {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        /* 英语专区样式 */
+        .english-zone-container {
+            display: flex;
+            height: calc(100vh - 200px);
+            min-height: 600px;
+        }
+
+        /* 左侧导航栏 */
+        .english-sidebar {
+            width: 240px;
+            background: #2D3748;
+            border-right: 1px solid #4A5568;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+        }
+
+        .english-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .english-logo-icon {
+            width: 60px;
+            height: 50px;
+            background: #38B2AC;
+            color: #1A202C;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .english-logo-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #38B2AC;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .english-logo-subtext {
+            font-size: 12px;
+            color: #A0AEC0;
+            margin-top: 4px;
+        }
+
+        .english-nav-list {
+            list-style: none;
+        }
+
+        .english-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #A0AEC0;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .english-nav-item.active {
+            background: rgba(56, 178, 172, 0.2);
+            color: #38B2AC;
+        }
+
+        .english-nav-item:hover {
+            background: #4A5568;
+            color: #E2E8F0;
+        }
+
+        .english-nav-icon {
+            margin-right: 12px;
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* 右侧内容区 */
+        .english-main-content {
+            flex: 1;
+            padding: 24px 32px;
+            overflow-y: auto;
+            background: #1A202C;
+        }
+
+        .english-header {
+            margin-bottom: 24px;
+        }
+
+        .english-header-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #E2E8F0;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .english-progress-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #A0AEC0;
+        }
+
+        .english-progress-bar {
+            width: 120px;
+            height: 8px;
+            background: #4A5568;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .english-progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #38B2AC;
+            transition: width 0.5s ease;
+        }
+
+        /* 文库内容样式 */
+        .library-section {
+            display: none;
+        }
+
+        .library-section.active {
+            display: block;
+        }
+
+        .library-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #E2E8F0;
+        }
+
+        .library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .library-card {
+            background: #2D3748;
+            border: 1px solid #4A5568;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .library-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-color: #38B2AC;
+        }
+
+        .library-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            color: #E2E8F0;
+        }
+
+        .library-card-description {
+            font-size: 14px;
+            color: #A0AEC0;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .library-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .library-tag {
+            font-size: 12px;
+            padding: 4px 10px;
+            background: #4A5568;
+            color: #A0AEC0;
+            border-radius: 16px;
+        }
+
+        .library-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .difficulty-badge {
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-weight: 600;
+            color: #1A202C;
+        }
+
+        .difficulty-beginner {
+            background: #48BB78;
+        }
+
+        .difficulty-intermediate {
+            background: #38B2AC;
+        }
+
+        .difficulty-advanced {
+            background: #4299E1;
+        }
+
+        .word-count {
+            color: #A0AEC0;
+        }
+
+        /* 其他功能区域占位符 */
+        .feature-placeholder {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .placeholder-icon {
+            font-size: 48px;
+            color: #38B2AC;
+            margin-bottom: 20px;
+        }
+
+        .placeholder-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #E2E8F0;
+            margin-bottom: 16px;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .placeholder-description {
+            color: #A0AEC0;
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 1rem;
+            }
+            
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .user-section {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .resource-actions {
+                flex-direction: column;
+            }
+            
+            .user-menu {
+                width: 250px;
+                right: -20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav>
+        <div class="logo-section">
+            <img src="resource_web/logo_64.png" alt="SMSF Logo" class="logo-icon">
+            <div>
+                <div class="logo-text">SMSF 学生中心</div>
+                <div class="logo-subtitle">Student Learning Center</div>
+            </div>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="learning-resources">
+                <i class="fas fa-book"></i>
+                学习资源
+            </button>
+            <button class="nav-tab" data-tab="english-zone">
+                <i class="fas fa-language"></i>
+                英语专区
+            </button>
+        </div>
+        
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-name" id="userName">张同学</div>
+                <div class="user-role">在校学生</div>
+            </div>
+            <div class="user-avatar" id="userAvatar">张</div>
+            
+            <!-- 用户菜单弹窗 -->
+            <div class="user-menu" id="userMenu">
+                <div class="menu-header">
+                    <div class="menu-user-avatar" id="menuUserAvatar">张</div>
+                    <div class="menu-user-name" id="menuUserName">张同学</div>
+                    <div class="menu-user-level">Lv. 15 学者</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="userLevel">15</div>
+                        <div class="stat-label">当前等级</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="userExp">1,250</div>
+                        <div class="stat-label">当前经验</div>
+                    </div>
+                </div>
+                
+                <div class="menu-buttons">
+                    <button class="menu-button" onclick="showNotifications()">
+                        <i class="fas fa-bell"></i>
+                        消息通知
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="menu-button" onclick="showFriends()">
+                        <i class="fas fa-users"></i>
+                        好友列表
+                    </button>
+                    <button class="menu-button logout-button" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        退出登录
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <!-- 学习资源区域 -->
+        <div class="content-section active" id="learning-resources-section">
+            <div class="section-header">
+                <h1 class="section-title">学习资源中心</h1>
+                <p class="section-subtitle">汇聚优质教育资源，为您提供全面、系统的学习材料和工具，助力您的学习之旅更加高效和充实</p>
+            </div>
+
+            <!-- 资源分类导航 -->
+            <div class="categories-nav">
+                <div class="categories-grid">
+                    <button class="category-btn active" data-category="all">
+                        <i class="fas fa-th-large category-icon"></i>
+                        <span>全部资源</span>
+                    </button>
+                    <div class="category-container">
+                        <button class="category-btn" data-category="video" id="videoCategoryBtn">
+                            <i class="fas fa-video category-icon"></i>
+                            <span>视频资源</span>
+                        </button>
+                        <!-- 视频学科下拉菜单 -->
+                        <div class="subject-dropdown" id="videoSubjectDropdown">
+                            <div class="subject-item active" data-subject-id="all">全部学科</div>
+                        </div>
+                    </div>
+                    <div class="category-container">
+                        <button class="category-btn" data-category="exercise" id="exerciseCategoryBtn">
+                            <i class="fas fa-tasks category-icon"></i>
+                            <span>习题资源</span>
+                        </button>
+                        <!-- 习题学科下拉菜单 -->
+                        <div class="subject-dropdown" id="exerciseSubjectDropdown">
+                            <div class="subject-item active" data-subject-id="all">全部学科</div>
+                        </div>
+                    </div>
+                    <button class="category-btn" data-category="other">
+                        <i class="fas fa-folder category-icon"></i>
+                        <span>其他资源</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 资源展示区域 -->
+            <div class="resources-grid" id="resourcesGrid">
+                <!-- 资源卡片将通过JavaScript动态生成 -->
+            </div>
+        </div>
+
+        <!-- 英语专区区域 -->
+        <div class="content-section" id="english-zone-section">
+            <div class="english-zone-container">
+                <!-- 左侧导航栏 -->
+                <aside class="english-sidebar">
+                    <div class="english-logo">
+                        <div class="english-logo-icon">📚</div>
+                        <div class="english-logo-text">SMSF 英语</div>
+                        <div class="english-logo-subtext">Student English Learning Center</div>
+                    </div>
+                    <ul class="english-nav-list">
+                        <li class="english-nav-item active" data-feature="library">
+                            <span class="english-nav-icon">📚</span>
+                            <span>文库</span>
+                        </li>
+                        <li class="english-nav-item" data-feature="bookshelf">
+                            <span class="english-nav-icon">📑</span>
+                            <span>书架</span>
+                        </li>
+                        <li class="english-nav-item" data-feature="notebook">
+                            <span class="english-nav-icon">📓</span>
+                            <span>笔记本</span>
+                        </li>
+                        <li class="english-nav-item" data-feature="vocabulary">
+                            <span class="english-nav-icon">🔤</span>
+                            <span>单词训练</span>
+                        </li>
+                        <li class="english-nav-item" data-feature="settings">
+                            <span class="english-nav-icon">⚙️</span>
+                            <span>设置</span>
+                        </li>
+                        <li class="english-nav-item" data-feature="profile">
+                            <span class="english-nav-icon">👤</span>
+                            <span>我的</span>
+                        </li>
+                    </ul>
+                </aside>
+                
+                <!-- 右侧主内容区 -->
+                <main class="english-main-content">
+                    <div class="english-header">
+                        <h1 class="english-header-title">文库</h1>
+                        <div class="english-progress-container">
+                            <span>您的英语学习进度</span>
+                            <span>📚 学习完成度: 0 / 6</span>
+                            <div class="english-progress-bar">
+                                <div class="english-progress-fill" id="progressFill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 文库内容（默认显示） -->
+                    <div class="library-section active" id="library-section">
+                        <h2 class="library-title">
+                            <span>🪁</span>
+                            <span>英语学习资源 (6)</span>
+                        </h2>
+                        <div class="library-grid">
+                            <!-- 听力训练 -->
+                            <div class="library-card" onclick="openLibraryItem('listening')">
+                                <h3 class="library-card-title">听力训练专区</h3>
+                                <p class="library-card-description">精选各类英语听力材料，从基础对话到专业讲座，循序渐进提升听力水平</p>
+                                <div class="library-tags">
+                                    <span class="library-tag">听力</span>
+                                    <span class="library-tag">音频</span>
+                                    <span class="library-tag">IELTS</span>
+                                </div>
+                                <div class="library-footer">
+                                    <span class="difficulty-badge difficulty-beginner">初级</span>
+                                    <span class="word-count">• 128个资源</span>
+                                </div>
+                            </div>
+
+                            <!-- 口语练习 -->
+                            <div class="library-card" onclick="openLibraryItem('speaking')">
+                                <h3 class="library-card-title">口语练习专区</h3>
+                                <p class="library-card-description">提供情景对话、话题讨论等口语练习材料，配有语音评测功能</p>
+                                <div class="library-tags">
+                                    <span class="library-tag">口语</span>
+                                    <span class="library-tag">对话</span>
+                                    <span class="library-tag">AI评测</span>
+                                </div>
+                                <div class="library-footer">
+                                    <span class="difficulty-badge difficulty-intermediate">中级</span>
+                                    <span class="word-count">• 86个话题</span>
+                                </div>
+                            </div>
+
+                            <!-- 阅读理解 -->
+                            <div class="library-card" onclick="openLibraryItem('reading')">
+                                <h3 class="library-card-title">阅读理解专区</h3>
+                                <p class="library-card-description">精选英文文章、新闻资讯，按难度分级，提升阅读速度和理解能力</p>
+                                <div class="library-tags">
+                                    <span class="library-tag">阅读</span>
+                                    <span class="library-tag">文章</span>
+                                    <span class="library-tag">分级</span>
+                                </div>
+                                <div class="library-footer">
+                                    <span class="difficulty-badge difficulty-intermediate">中级</span>
+                                    <span class="word-count">• 256篇文章</span>
+                                </div>
+                            </div>
+
+                            <!-- 写作训练 -->
+                            <div class="library-card" onclick="openLibraryItem('writing')">
+                                <h3 class="library-card-title">写作训练专区</h3>
+                                <p class="library-card-description">提供写作模板、范文示例和智能批改服务，快速提升写作技能</p>
+                                <div class="library-tags">
+                                    <span class="library-tag">写作</span>
+                                    <span class="library-tag">批改</span>
+                                    <span class="library-tag">模板</span>
+                                </div>
+                                <div class="library-footer">
+                                    <span class="difficulty-badge difficulty-advanced">高级</span>
+                                    <span class="word-count">• 42个主题</span>
+                                </div>
+                            </div>
+
+                            <!-- 词汇积累 -->
+                            <div class="library-card" onclick="openLibraryItem('vocabulary')">
+                                <h3 class="library-card-title">词汇积累专区</h3>
+                                <p class="library-card-description">科学记忆法背单词，按考试大纲和使用频率分类，记得牢用得准</p>
+                                <div class="library-tags">
+                                    <span class="library-tag">词汇</span>
+                                    <span class="library-tag">记忆</span>
+                                    <span class="library-tag">词典</span>
+                                </div>
+                                <div class="library-footer">
+                                    <span class="difficulty-badge difficulty-beginner">初级</span>
+                                    <span class="word-count">• 8,000+词汇</span>
+                                </div>
+                            </div>
+
+                            <!-- 考试专区 -->
+                            <div class="library-card" onclick="openLibraryItem('exam')">
+                                <h3 class="library-card-title">考试专区</h3>
+                                <p class="library-card-description">针对四六级、雅思、托福等考试的专项训练，真题模拟一应俱全</p>
+                                <div class="library-tags">
+                                    <span class="library-tag">考试</span>
+                                    <span class="library-tag">真题</span>
+                                    <span class="library-tag">模拟</span>
+                                </div>
+                                <div class="library-footer">
+                                    <span class="difficulty-badge difficulty-advanced">高级</span>
+                                    <span class="word-count">• 15套真题</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 书架内容 -->
+                    <div class="library-section" id="bookshelf-section">
+                        <div class="feature-placeholder">
+                            <div class="placeholder-icon">📑</div>
+                            <h2 class="placeholder-title">书架功能开发中</h2>
+                            <p class="placeholder-description">
+                                我们正在为您打造个性化的英语书籍管理系统，敬请期待！
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 笔记本内容 -->
+                    <div class="library-section" id="notebook-section">
+                        <div class="feature-placeholder">
+                            <div class="placeholder-icon">📓</div>
+                            <h2 class="placeholder-title">笔记本功能开发中</h2>
+                            <p class="placeholder-description">
+                                智能笔记系统正在开发中，将为您提供便捷的学习记录功能！
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 单词训练内容 -->
+                    <div class="library-section" id="vocabulary-section">
+                        <div class="feature-placeholder">
+                            <div class="placeholder-icon">🔤</div>
+                            <h2 class="placeholder-title">单词训练功能开发中</h2>
+                            <p class="placeholder-description">
+                                科学的单词记忆系统即将上线，帮助您高效扩充词汇量！
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 设置内容 -->
+                    <div class="library-section" id="settings-section">
+                        <div class="feature-placeholder">
+                            <div class="placeholder-icon">⚙️</div>
+                            <h2 class="placeholder-title">设置功能开发中</h2>
+                            <p class="placeholder-description">
+                                个性化设置功能正在完善中，将为您提供更贴心的使用体验！
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 我的内容 -->
+                    <div class="library-section" id="profile-section">
+                        <div class="feature-placeholder">
+                            <div class="placeholder-icon">👤</div>
+                            <h2 class="placeholder-title">个人中心开发中</h2>
+                            <p class="placeholder-description">
+                                个人学习档案和进度追踪功能即将上线，敬请期待！
+                            </p>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let resourcesData = [];
+        let subjectsData = [];
+        let currentUser = null;
+        let selectedVideoSubject = 'all';
+        let selectedExerciseSubject = 'all';
+        let currentResources = [];
+        let currentPage = 1;
+        const itemsPerPage = 6;
+
+        // DOM元素引用
+        const userMenu = document.getElementById('userMenu');
+        const userAvatar = document.getElementById('userAvatar');
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+            setupEventListeners();
+            loadUserData();
+            loadResources();
+        });
+
+        // 初始化页面
+        function initializePage() {
+            // 设置默认激活的学习资源标签
+            setActiveTab('learning-resources');
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 标签切换
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
+                    setActiveTab(tabId);
+                });
+            });
+
+            // 用户头像点击事件
+            userAvatar.addEventListener('click', toggleUserMenu);
+
+            // 点击其他地方关闭用户菜单
+            document.addEventListener('click', function(e) {
+                if (!userAvatar.contains(e.target) && !userMenu.contains(e.target)) {
+                    closeUserMenu();
+                }
+            });
+
+            // ESC键关闭菜单
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeUserMenu();
+                }
+            });
+
+            // 学习资源分类筛选
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    hideAllSubjectDropdowns();
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const category = this.dataset.category;
+                    filterByCategory(category);
+                });
+            });
+
+            // 学科筛选
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('subject-item')) {
+                    const subjectId = e.target.dataset.subjectId;
+                    const parentDropdown = e.target.closest('.subject-dropdown');
+                    
+                    let isVideoFilter = parentDropdown.id === 'videoSubjectDropdown';
+                    let isExerciseFilter = parentDropdown.id === 'exerciseSubjectDropdown';
+                    
+                    if (isVideoFilter) {
+                        selectedVideoSubject = subjectId;
+                    } else if (isExerciseFilter) {
+                        selectedExerciseSubject = subjectId;
+                    }
+                    
+                    parentDropdown.querySelectorAll('.subject-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    e.target.classList.add('active');
+                    
+                    if (isVideoFilter) {
+                        filterByVideoSubject(subjectId);
+                    } else if (isExerciseFilter) {
+                        filterByExerciseSubject(subjectId);
+                    }
+                }
+            });
+
+            // 设置学科下拉菜单悬停事件
+            setupCategoryHover();
+        }
+
+        // 设置分类悬停事件
+        function setupCategoryHover() {
+            const videoBtn = document.getElementById('videoCategoryBtn');
+            const videoDropdown = document.getElementById('videoSubjectDropdown');
+            const videoContainer = videoBtn ? videoBtn.parentElement : null;
+            
+            if (videoBtn && videoDropdown && videoContainer) {
+                let hideTimeout;
+                
+                videoContainer.addEventListener('mouseenter', function() {
+                    clearTimeout(hideTimeout);
+                    loadSubjects();
+                    videoDropdown.classList.add('show');
+                });
+                
+                videoContainer.addEventListener('mouseleave', function(e) {
+                    hideTimeout = setTimeout(() => {
+                        if (!videoDropdown.matches(':hover')) {
+                            hideSubjectDropdown(videoDropdown);
+                        }
+                    }, 300);
+                });
+                
+                videoDropdown.addEventListener('mouseenter', function() {
+                    clearTimeout(hideTimeout);
+                });
+                
+                videoDropdown.addEventListener('mouseleave', function() {
+                    hideTimeout = setTimeout(() => {
+                        hideSubjectDropdown(videoDropdown);
+                    }, 300);
+                });
+            }
+            
+            const exerciseBtn = document.getElementById('exerciseCategoryBtn');
+            const exerciseDropdown = document.getElementById('exerciseSubjectDropdown');
+            const exerciseContainer = exerciseBtn ? exerciseBtn.parentElement : null;
+            
+            if (exerciseBtn && exerciseDropdown && exerciseContainer) {
+                let hideTimeout;
+                
+                exerciseContainer.addEventListener('mouseenter', function() {
+                    clearTimeout(hideTimeout);
+                    loadSubjects();
+                    exerciseDropdown.classList.add('show');
+                });
+                
+                exerciseContainer.addEventListener('mouseleave', function(e) {
+                    hideTimeout = setTimeout(() => {
+                        if (!exerciseDropdown.matches(':hover')) {
+                            hideSubjectDropdown(exerciseDropdown);
+                        }
+                    }, 300);
+                });
+                
+                exerciseDropdown.addEventListener('mouseenter', function() {
+                    clearTimeout(hideTimeout);
+                });
+                
+                exerciseDropdown.addEventListener('mouseleave', function() {
+                    hideTimeout = setTimeout(() => {
+                        hideSubjectDropdown(exerciseDropdown);
+                    }, 300);
+                });
+            }
+        }
+
+        // 切换激活标签
+        function setActiveTab(tabId) {
+            // 更新标签状态
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            
+            // 显示对应内容区域
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`${tabId}-section`).classList.add('active');
+        }
+
+        // 切换用户菜单显示
+        function toggleUserMenu() {
+            userMenu.classList.toggle('show');
+        }
+
+        // 关闭用户菜单
+        function closeUserMenu() {
+            userMenu.classList.remove('show');
+        }
+
+        // 加载用户数据
+        async function loadUserData() {
+            try {
+                console.log('开始加载用户数据...');
+                const response = await fetch('/api/student-info');
+                console.log('API响应状态:', response.status);
+                
+                const result = await response.json();
+                console.log('API响应数据:', result);
+                
+                if (result.success) {
+                    const studentData = result.student;
+                    currentUser = {
+                        name: studentData.name,
+                        level: studentData.rank,
+                        exp: studentData.exp,
+                        role: '在校学生',
+                        notifications: 3, // 可以从info字段中获取通知数量
+                        account: studentData.account
+                    };
+                    
+                    console.log('用户数据加载成功:', currentUser);
+                    updateUserDisplay();
+                } else {
+                    console.error('获取学生信息失败:', result.message);
+                    // 使用默认数据
+                    currentUser = {
+                        name: '张同学',
+                        level: 1,
+                        exp: 0,
+                        role: '在校学生',
+                        notifications: 0,
+                        account: 'default_user'
+                    };
+                    updateUserDisplay();
+                }
+            } catch (error) {
+                console.error('加载用户数据失败:', error);
+                // 使用默认数据
+                currentUser = {
+                    name: '张同学',
+                    level: 1,
+                    exp: 0,
+                    role: '在校学生',
+                    notifications: 0,
+                    account: 'default_user'
+                };
+                updateUserDisplay();
+            }
+        }
+
+        // 更新用户显示信息
+        function updateUserDisplay() {
+            console.log('更新用户显示信息:', currentUser);
+            if (!currentUser) return;
+            
+            // 更新导航栏用户信息
+            const userNameElement = document.getElementById('userName');
+            const userAvatarElement = document.getElementById('userAvatar');
+            
+            if (userNameElement) {
+                userNameElement.textContent = currentUser.name;
+                console.log('更新用户名:', currentUser.name);
+            }
+            
+            if (userAvatarElement) {
+                userAvatarElement.textContent = currentUser.name.charAt(0);
+                console.log('更新用户头像:', currentUser.name.charAt(0));
+            }
+            
+            // 更新菜单用户信息
+            const menuUserNameElement = document.getElementById('menuUserName');
+            const menuUserAvatarElement = document.getElementById('menuUserAvatar');
+            
+            if (menuUserNameElement) {
+                menuUserNameElement.textContent = currentUser.name;
+            }
+            
+            if (menuUserAvatarElement) {
+                menuUserAvatarElement.textContent = currentUser.name.charAt(0);
+            }
+            
+            // 更新等级和经验
+            const userLevelElement = document.getElementById('userLevel');
+            const userExpElement = document.getElementById('userExp');
+            
+            if (userLevelElement) {
+                userLevelElement.textContent = currentUser.level;
+            }
+            
+            if (userExpElement) {
+                userExpElement.textContent = currentUser.exp.toLocaleString();
+            }
+            
+            // 更新通知数量
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.textContent = currentUser.notifications;
+                badge.style.display = currentUser.notifications > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        // 加载资源数据
+        async function loadResources() {
+            try {
+                const apiUrl = buildApiUrl('/api/study-resources');
+                console.log('资源API请求URL:', apiUrl);
+                
+                const response = await fetch(apiUrl);
+                const result = await response.json();
+                
+                if (result.success) {
+                    resourcesData = result.resources;
+                    currentResources = [...resourcesData];
+                    renderResources();
+                } else {
+                    console.error('获取资源失败:', result.message);
+                    showErrorMessage('加载资源失败，请稍后重试');
+                }
+            } catch (error) {
+                console.error('加载资源时出错:', error);
+                showErrorMessage('网络错误，请检查网络连接');
+            }
+        }
+
+        // 加载学科数据
+        async function loadSubjects() {
+            try {
+                const apiUrl = buildApiUrl('/api/subjects');
+                console.log('学科API请求URL:', apiUrl);
+                
+                const response = await fetch(apiUrl);
+                const result = await response.json();
+                
+                if (result.success) {
+                    subjectsData = result.subjects || [];
+                    renderSubjectDropdown();
+                }
+            } catch (error) {
+                console.error('加载学科时出错:', error);
+                subjectsData = [];
+            }
+        }
+
+        // 渲染学科下拉菜单
+        function renderSubjectDropdown() {
+            const videoDropdown = document.getElementById('videoSubjectDropdown');
+            const exerciseDropdown = document.getElementById('exerciseSubjectDropdown');
+            
+            if (subjectsData.length === 0) return;
+            
+            const subjectItems = subjectsData.map(subject => {
+                const subjectId = subject.id_s || subject.id || '';
+                const subjectName = subject.subject || subject.name || '未知学科';
+                
+                return `<div class="subject-item" data-subject-id="${subjectId}">${subjectName}</div>`;
+            }).join('');
+            
+            if (videoDropdown) {
+                const allItem = videoDropdown.querySelector('[data-subject-id="all"]');
+                videoDropdown.innerHTML = '';
+                if (allItem) videoDropdown.appendChild(allItem);
+                videoDropdown.innerHTML += subjectItems;
+            }
+            
+            if (exerciseDropdown) {
+                const allItem = exerciseDropdown.querySelector('[data-subject-id="all"]');
+                exerciseDropdown.innerHTML = '';
+                if (allItem) exerciseDropdown.appendChild(allItem);
+                exerciseDropdown.innerHTML += subjectItems;
+            }
+        }
+
+        // 按分类筛选资源
+        function filterByCategory(category) {
+            if (category === 'all') {
+                currentResources = [...resourcesData];
+            } else {
+                currentResources = resourcesData.filter(resource => resource.category === category);
+            }
+            currentPage = 1;
+            renderResources();
+        }
+
+        // 按视频学科筛选
+        function filterByVideoSubject(subjectId) {
+            if (subjectId === 'all') {
+                currentResources = resourcesData.filter(resource => resource.category === 'video');
+            } else {
+                currentResources = resourcesData.filter(resource => 
+                    resource.category === 'video' && 
+                    String(resource.subject_id) === String(subjectId)
+                );
+            }
+            currentPage = 1;
+            renderResources();
+        }
+
+        // 按习题学科筛选
+        function filterByExerciseSubject(subjectId) {
+            if (subjectId === 'all') {
+                currentResources = resourcesData.filter(resource => resource.category === 'exercise');
+            } else {
+                currentResources = resourcesData.filter(resource => 
+                    resource.category === 'exercise' && 
+                    String(resource.subject_id) === String(subjectId)
+                );
+            }
+            currentPage = 1;
+            renderResources();
+        }
+
+        // 渲染资源卡片
+        function renderResources() {
+            const grid = document.getElementById('resourcesGrid');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageResources = currentResources.slice(startIndex, endIndex);
+
+            grid.innerHTML = pageResources.map(resource => `
+                <div class="resource-card">
+                    <div class="resource-header">
+                        <div class="resource-icon">
+                            <i class="${resource.icon}"></i>
+                        </div>
+                        <span class="resource-type">${resource.type}</span>
+                    </div>
+                    <h3 class="resource-title">${resource.title}</h3>
+                    <p class="resource-description">${resource.description}</p>
+                    <div class="resource-meta">
+                        <div class="resource-tags">
+                            ${resource.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        <div>
+                            <span><i class="fas fa-download"></i> ${resource.downloads.toLocaleString()}</span>
+                            <span style="margin-left: 1rem;"><i class="fas fa-star"></i> ${resource.rating}</span>
+                        </div>
+                    </div>
+                    <div class="resource-actions">
+                        <a href="#" class="action-btn primary-btn" onclick="downloadResource(${resource.id})">
+                            <i class="fas fa-download"></i> 下载
+                        </a>
+                        <a href="#" class="action-btn secondary-btn" onclick="viewResource(${resource.id})">
+                            <i class="fas fa-eye"></i> 查看详情
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 隐藏学科下拉菜单
+        function hideSubjectDropdown(dropdown) {
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        }
+
+        // 隐藏所有学科下拉菜单
+        function hideAllSubjectDropdowns() {
+            const dropdowns = document.querySelectorAll('.subject-dropdown');
+            dropdowns.forEach(dropdown => {
+                dropdown.classList.remove('show');
+            });
+        }
+
+        // 显示错误消息
+        function showErrorMessage(message) {
+            const grid = document.getElementById('resourcesGrid');
+            grid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #EF4444;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <p style="font-size: 1.2rem;">${message}</p>
+                    <button class="action-btn primary-btn" onclick="loadResources()" style="margin-top: 1rem;">
+                        <i class="fas fa-redo"></i> 重新加载
+                    </button>
+                </div>
+            `;
+        }
+
+        // 下载资源
+        function downloadResource(id) {
+            const resource = resourcesData.find(r => r.id === id);
+            alert(`正在下载资源：${resource.title}\n请稍候...`);
+        }
+
+        // 查看资源详情
+        function viewResource(id) {
+            const resource = resourcesData.find(r => r.id === id);
+            alert(`查看资源详情：${resource.title}\n描述：${resource.description}`);
+        }
+
+        // 显示通知
+        function showNotifications() {
+            closeUserMenu();
+            alert(`您有 ${currentUser.notifications} 条未读通知`);
+        }
+
+        // 显示好友列表
+        function showFriends() {
+            closeUserMenu();
+            alert('好友列表功能正在开发中...');
+        }
+
+        // 退出登录
+        function logout() {
+            console.log('student_learning.html - 退出登录函数被调用');
+            if(confirm('确定要退出登录吗？')) {
+                console.log('student_learning.html - 用户确认退出登录');
+                // 调用后端退出API清理Redis会话和Cookie
+                fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    console.log('student_learning.html - 退出API响应状态:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('student_learning.html - 退出API响应数据:', data);
+                    if (data.success) {
+                        console.log('退出登录成功:', data.message);
+                        // 清除本地存储
+                        localStorage.removeItem('currentUser');
+                        // 跳转到学习平台主页
+                        window.location.href = '/learning-platform';
+                    } else {
+                        console.error('退出登录失败:', data.message);
+                        alert('退出登录失败: ' + data.message);
+                        // 即使API失败也跳转到主页
+                        window.location.href = '/learning-platform';
+                    }
+                })
+                .catch(error => {
+                    console.error('退出登录请求失败:', error);
+                    // 即使API调用失败，也清除本地数据并跳转
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '/learning-platform';
+                });
+            } else {
+                console.log('student_learning.html - 用户取消退出登录');
+            }
+        }
+
+        // 英语专区功能相关函数
+        function setupEnglishZone() {
+            // 左侧导航栏点击事件
+            document.querySelectorAll('.english-nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const feature = this.dataset.feature;
+                    switchFeature(feature);
+                });
+            });
+            
+            // 初始化进度条动画
+            setTimeout(() => {
+                const progressFill = document.getElementById('progressFill');
+                if (progressFill) {
+                    progressFill.style.width = '0%';
+                }
+            }, 100);
+        }
+
+        // 切换功能模块
+        function switchFeature(feature) {
+            // 更新左侧导航状态
+            document.querySelectorAll('.english-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-feature="${feature}"]`).classList.add('active');
+            
+            // 更新标题
+            const headerTitle = document.querySelector('.english-header-title');
+            const titles = {
+                'library': '文库',
+                'bookshelf': '书架',
+                'notebook': '笔记本',
+                'vocabulary': '单词训练',
+                'settings': '设置',
+                'profile': '我的'
+            };
+            if (headerTitle) {
+                headerTitle.textContent = titles[feature] || '英语学习';
+            }
+            
+            // 显示对应内容区域
+            document.querySelectorAll('.library-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`${feature}-section`).classList.add('active');
+        }
+
+        // 打开文库项目
+        function openLibraryItem(category) {
+            const categoryNames = {
+                'listening': '听力训练',
+                'speaking': '口语练习',
+                'reading': '阅读理解',
+                'writing': '写作训练',
+                'vocabulary': '词汇积累',
+                'exam': '考试专区'
+            };
+            
+            alert(`即将进入${categoryNames[category]}专区\n功能正在开发中，敬请期待！`);
+        }
+    </script>
+</body>
+</html>        /* 英语专区响应式设�?*/
+        @media (max-width: 1024px) {
+            .english-zone-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .english-sidebar {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 16px;
+                border-right: none;
+                border-bottom: 1px solid #4A5568;
+            }
+            
+            .english-nav-item {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+                margin-bottom: 0;
+                margin-right: 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .english-sidebar {
+                flex-direction: column;
+            }
+            
+            .english-nav-item {
+                min-width: unset;
+                justify-content: flex-start;
+                margin-right: 0;
+            }
+            
+            .library-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .english-main-content {
+                padding: 16px;
+            }
+        }

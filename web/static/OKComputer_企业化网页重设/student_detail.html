@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生详情 - SMAF 智慧管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Quattrocento+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #1A202C;
+            color: #E2E8F0;
+        }
+        .font-heading {
+            font-family: 'Quattrocento Sans', sans-serif;
+        }
+        .sidebar {
+            background: linear-gradient(180deg, #2D3748 0%, #4A5568 100%);
+            min-height: calc(100vh - 80px);
+        }
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            background-color: rgba(56, 178, 172, 0.1);
+            border-left: 4px solid #38B2AC;
+        }
+        .nav-item.active {
+            background-color: rgba(56, 178, 172, 0.2);
+            border-left: 4px solid #38B2AC;
+        }
+        .info-card {
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%);
+            border: 1px solid #4A5568;
+            transition: all 0.3s ease;
+        }
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(56, 178, 172, 0.15);
+        }
+        .chart-container {
+            background: #2D3748;
+            border: 1px solid #4A5568;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .table-row {
+            transition: all 0.2s ease;
+        }
+        .table-row:hover {
+            background-color: rgba(56, 178, 172, 0.05);
+        }
+        .student-avatar {
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+        }
+        .score-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .score-excellent { background-color: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .score-good { background-color: rgba(59, 130, 246, 0.1); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .score-average { background-color: rgba(245, 158, 11, 0.1); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .score-below { background-color: rgba(239, 68, 68, 0.1); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- 顶部导航栏 -->
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4">
+        <div class="flex items-center justify-between">
+            <!-- Logo和品牌 -->
+            <div class="flex items-center space-x-3">
+                <img src="resource_web/logo_64.png" alt="SMSF Logo" class="w-10 h-10 object-contain">
+                <div>
+                    <h1 class="text-xl font-bold font-heading gradient-text">SMAF 智慧管理</h1>
+                    <p class="text-xs text-gray-400">教学管理系统</p>
+                </div>
+            </div>
+
+            <!-- 导航面包屑 -->
+            <div class="flex items-center space-x-2 text-sm">
+                <button class="text-gray-400 hover:text-white transition-colors" onclick="goToClasses()">班级管理</button>
+                <span class="text-gray-500">/</span>
+                <button class="text-gray-400 hover:text-white transition-colors" onclick="goToClassDetail()">班级详情</button>
+                <span class="text-gray-500">/</span>
+                <span class="text-white" id="breadcrumbStudentName">学生详情</span>
+            </div>
+
+            <!-- 用户信息 -->
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-sm text-gray-300">当前用户</p>
+                    <p class="text-lg font-semibold text-white" id="userName">用户</p>
+                </div>
+                <div class="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center" id="userAvatar">
+                    <span class="text-white font-bold text-lg">U</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- 侧边导航栏 -->
+        <aside class="sidebar w-64 border-r border-gray-700">
+            <nav class="p-4">
+                <div class="space-y-2">
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="location.href='/dashboard'">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="home" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">主界面</span>
+                        </div>
+                    </div>
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="location.href='/classes'">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="users" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">班级管理</span>
+                        </div>
+                    </div>
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="location.href='/class-detail'">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="book" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">班级详情</span>
+                        </div>
+                    </div>
+                    <div class="nav-item active px-4 py-3 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="user" class="w-5 h-5 text-teal-400"></i>
+                            <span class="text-white font-medium">学生详情</span>
+                        </div>
+                    </div>
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="location.href='/exams'">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="file-text" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">考试管理</span>
+                        </div>
+                    </div>
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer" onclick="logout()">
+                        <div class="flex items-center space-x-3">
+                            <i data-feather="log-out" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-gray-300">退出登录</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- 主内容区域 -->
+        <main class="flex-1 p-6">
+            <!-- 加载状态 -->
+            <div id="loadingIndicator" class="flex justify-center items-center py-20">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+                <span class="ml-3 text-gray-400">正在加载学生信息...</span>
+            </div>
+
+            <!-- 学生标题和基本信息 -->
+            <div id="studentHeader" class="mb-6 hidden">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="student-avatar w-16 h-16 rounded-full flex items-center justify-center">
+                            <span class="text-white text-2xl font-bold" id="studentInitial">S</span>
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-bold text-white font-heading mb-1" id="studentName">学生姓名</h1>
+                            <div class="flex items-center space-x-4 text-sm text-gray-400">
+                                <span>学号: <span class="text-white" id="studentAccount">学号</span></span>
+                                <span>班级: <span class="text-white" id="studentClass">班级</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" onclick="goToClassDetail()">
+                        返回班级
+                    </button>
+                </div>
+            </div>
+
+            <!-- 核心指标卡片 -->
+            <div id="statsCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 hidden">
+                <div class="info-card rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium">当前平均分</p>
+                            <p class="text-3xl font-bold text-white mt-2" id="currentAvgScore">0.0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i data-feather="trending-up" class="w-6 h-6 text-blue-400"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-sm text-gray-400">
+                        <span id="avgScoreChange">+0.0</span> 较上次考试
+                    </div>
+                </div>
+
+                <div class="info-card rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium">考试次数</p>
+                            <p class="text-3xl font-bold text-white mt-2" id="examCount">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i data-feather="file-text" class="w-6 h-6 text-purple-400"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-sm text-gray-400">
+                        参与考试总数
+                    </div>
+                </div>
+
+                <div class="info-card rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium">最高分</p>
+                            <p class="text-3xl font-bold text-white mt-2" id="highestScore">0.0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i data-feather="award" class="w-6 h-6 text-green-400"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-sm text-gray-400">
+                        历次考试最高分
+                    </div>
+                </div>
+
+                <div class="info-card rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium">及格率</p>
+                            <p class="text-3xl font-bold text-white mt-2" id="passRate">0%</p>
+                        </div>
+                        <div class="w-12 h-12 bg-teal-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i data-feather="check-circle" class="w-6 h-6 text-teal-400"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-sm text-green-400">
+                        <span id="passRateChange">+0.0%</span> 较上次考试
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表分析区域 -->
+            <div id="chartsContainer" class="hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- 历次考试总分趋势 -->
+                    <div class="chart-container rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-white">历次考试总分趋势</h3>
+                            <button class="text-gray-400 hover:text-white transition-colors">
+                                <i data-feather="more-vertical" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="examTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 各科目平均分对比 -->
+                    <div class="chart-container rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-white">各科目平均分对比</h3>
+                            <button class="text-gray-400 hover:text-white transition-colors">
+                                <i data-feather="more-vertical" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="subjectAvgChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 详细考试记录 -->
+            <div id="examRecordsContainer" class="hidden bg-gray-800 rounded-xl border border-gray-700 overflow-hidden mb-8">
+                <div class="px-6 py-4 border-b border-gray-700">
+                    <h3 class="text-lg font-semibold text-white">考试记录详情</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-700">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">考试名称</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">日期</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">总分</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">科目详情</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">状态</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-gray-800 divide-y divide-gray-700" id="examRecordsTableBody">
+                            <!-- 动态加载考试记录数据 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 学生能力分析 -->
+            <div id="analysisContainer" class="hidden bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-700">
+                    <h3 class="text-lg font-semibold text-white">能力分析</h3>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-md font-medium text-white mb-3">最强科目</h4>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-gray-300" id="strongestSubject">暂无数据</span>
+                                <span class="text-white font-medium" id="strongestScore">0.0</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-md font-medium text-white mb-3">待提升科目</h4>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-gray-300" id="weakestSubject">暂无数据</span>
+                                <span class="text-white font-medium" id="weakestScore">0.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h4 class="text-md font-medium text-white mb-3">AI分析建议</h4>
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <p class="text-gray-300" id="aiAnalysis">暂无AI分析数据</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 错误消息 -->
+            <div id="errorMessage" class="hidden bg-red-900 text-red-100 rounded-xl p-6 text-center">
+                <i data-feather="alert-circle" class="w-12 h-12 mx-auto text-red-400 mb-3"></i>
+                <h3 class="text-xl font-bold mb-2">加载失败</h3>
+                <p id="errorText">未能获取学生信息，请稍后重试</p>
+                <button class="mt-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition-colors" onclick="retryLoad()">
+                    重新加载
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 初始化图标
+        feather.replace();
+
+        let examTrendChart = null;
+        let subjectAvgChart = null;
+        let studentAccount = '';
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 从URL参数获取学生账号
+            const urlParams = new URLSearchParams(window.location.search);
+            studentAccount = urlParams.get('account');
+            
+            if (!studentAccount) {
+                alert('缺少学生账号参数');
+                window.location.href = '/classes';
+                return;
+            }
+            
+            loadUserInfo();
+            loadStudentDetail(studentAccount);
+            setupEventListeners();
+        });
+
+        // 加载用户信息
+        function loadUserInfo() {
+            fetch('/api/current_user')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const userAccount = data.user.account;
+                        document.getElementById('userName').textContent = userAccount;
+                        document.getElementById('userAvatar').textContent = userAccount.charAt(0).toUpperCase();
+                    }
+                })
+                .catch(error => {
+                    console.error('获取用户信息失败:', error);
+                });
+        }
+
+        // 加载学生详情
+        function loadStudentDetail(studentAccount) {
+            // 显示加载状态
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+            document.getElementById('studentHeader').classList.add('hidden');
+            document.getElementById('statsCards').classList.add('hidden');
+            document.getElementById('chartsContainer').classList.add('hidden');
+            document.getElementById('examRecordsContainer').classList.add('hidden');
+            document.getElementById('analysisContainer').classList.add('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+
+            fetch(`/api/student-detail/${encodeURIComponent(studentAccount)}`, {
+                method: 'GET',
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 隐藏加载状态，显示内容
+                    document.getElementById('loadingIndicator').classList.add('hidden');
+                    document.getElementById('studentHeader').classList.remove('hidden');
+                    document.getElementById('statsCards').classList.remove('hidden');
+                    document.getElementById('chartsContainer').classList.remove('hidden');
+                    document.getElementById('examRecordsContainer').classList.remove('hidden');
+                    document.getElementById('analysisContainer').classList.remove('hidden');
+
+                    // 更新学生基本信息
+                    document.getElementById('studentName').textContent = data.studentInfo.name || '未知';
+                    document.getElementById('studentAccount').textContent = data.studentInfo.account || '未知';
+                    document.getElementById('studentClass').textContent = data.studentInfo.className || '未知';
+                    document.getElementById('breadcrumbStudentName').textContent = data.studentInfo.name || '学生详情';
+                    
+                    // 设置学生头像首字母
+                    const name = data.studentInfo.name || 'S';
+                    document.getElementById('studentInitial').textContent = name.charAt(0);
+                    
+                    // 更新核心指标
+                    document.getElementById('currentAvgScore').textContent = data.studentInfo.avgScore ? data.studentInfo.avgScore.toFixed(1) : '0.0';
+                    document.getElementById('examCount').textContent = data.studentInfo.examCount || 0;
+                    document.getElementById('highestScore').textContent = data.studentInfo.highestScore ? data.studentInfo.highestScore.toFixed(1) : '0.0';
+                    document.getElementById('passRate').textContent = data.studentInfo.passRate || '0%';
+                    
+                    // 更新变化值（这里使用模拟数据，实际应用中应从API获取）
+                    document.getElementById('avgScoreChange').textContent = data.studentInfo.avgScoreChange || '+0.0';
+                    document.getElementById('passRateChange').textContent = data.studentInfo.passRateChange || '+0.0%';
+                    
+                    // 更新考试记录表格
+                    updateExamRecordsTable(data.examRecords);
+                    
+                    // 更新能力分析
+                    document.getElementById('strongestSubject').textContent = data.strongestSubject || '暂无数据';
+                    document.getElementById('strongestScore').textContent = data.strongestScore ? data.strongestScore.toFixed(1) : '0.0';
+                    document.getElementById('weakestSubject').textContent = data.weakestSubject || '暂无数据';
+                    document.getElementById('weakestScore').textContent = data.weakestScore ? data.weakestScore.toFixed(1) : '0.0';
+                    document.getElementById('aiAnalysis').textContent = data.aiAnalysis || '暂无AI分析数据';
+                    
+                    // 创建图表
+                    createExamTrendChart(data.examTrendData);
+                    createSubjectAvgChart(data.subjectAverages);
+                } else {
+                    console.error('获取学生详情失败:', data.message);
+                    // 隐藏加载状态，显示错误信息
+                    document.getElementById('loadingIndicator').classList.add('hidden');
+                    document.getElementById('errorMessage').classList.remove('hidden');
+                    document.getElementById('errorText').textContent = data.message || '获取学生详情失败';
+                }
+            })
+            .catch(error => {
+                console.error('获取学生详情失败:', error);
+                // 隐藏加载状态，显示错误信息
+                document.getElementById('loadingIndicator').classList.add('hidden');
+                document.getElementById('errorMessage').classList.remove('hidden');
+                document.getElementById('errorText').textContent = '网络错误，无法获取学生详情';
+            });
+        }
+
+        // 更新考试记录表格
+        function updateExamRecordsTable(examRecords) {
+            const tbody = document.getElementById('examRecordsTableBody');
+            tbody.innerHTML = '';
+            
+            if (examRecords && examRecords.length > 0) {
+                examRecords.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.className = 'table-row';
+                    
+                    // 计算总分
+                    let totalScore = 0;
+                    let totalMax = 0;
+                    let subjectDetails = '';
+                    
+                    for (const [subject, [score, max]] of Object.entries(record.subjects || {})) {
+                        if (subject !== 'total') {  // 排除total字段
+                            totalScore += score;
+                            totalMax += max;
+                            subjectDetails += `${subject}: ${score}/${max} `;
+                        }
+                    }
+                    
+                    // 确定状态
+                    let statusClass = 'score-below';
+                    let statusText = '不及格';
+                    if (totalScore >= 85) {
+                        statusClass = 'score-excellent';
+                        statusText = '优秀';
+                    } else if (totalScore >= 75) {
+                        statusClass = 'score-good';
+                        statusText = '良好';
+                    } else if (totalScore >= 60) {
+                        statusClass = 'score-average';
+                        statusText = '及格';
+                    }
+                    
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${record.examName || '未知考试'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${record.date || '未知日期'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-white">${totalScore}/${totalMax}</td>
+                        <td class="px-6 py-4 text-sm text-gray-300">${subjectDetails}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="score-badge ${statusClass}">${statusText}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button class="text-yellow-400 hover:text-yellow-300 transition-colors" onclick="openModifyScorePage('${record.examName || ""}', '${studentAccount}')">
+                                <i data-feather="edit" class="w-4 h-4"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="6" class="px-6 py-4 text-center text-gray-400">暂无考试记录</td>`;
+                tbody.appendChild(row);
+            }
+            
+            // 重新渲染图标
+            feather.replace();
+        }
+
+        // 创建考试趋势图
+        function createExamTrendChart(examTrendData) {
+            const ctx = document.getElementById('examTrendChart').getContext('2d');
+            
+            // 销毁现有图表实例
+            if (examTrendChart) {
+                examTrendChart.destroy();
+            }
+            
+            const labels = examTrendData.labels || [];
+            const data = examTrendData.data || [];
+            
+            examTrendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '考试总分',
+                        data: data,
+                        borderColor: '#38B2AC',
+                        backgroundColor: 'rgba(56, 178, 172, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#38B2AC',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#38B2AC',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            min: 0,
+                            suggestedMax: 100,
+                            ticks: {
+                                color: '#A0AEC0'
+                            },
+                            grid: {
+                                color: '#4A5568'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#A0AEC0'
+                            },
+                            grid: {
+                                color: '#4A5568'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 创建科目平均分图
+        function createSubjectAvgChart(subjectAverages) {
+            const ctx = document.getElementById('subjectAvgChart').getContext('2d');
+            
+            // 销毁现有图表实例
+            if (subjectAvgChart) {
+                subjectAvgChart.destroy();
+            }
+            
+            const labels = Object.keys(subjectAverages || {});
+            const data = Object.values(subjectAverages || {});
+            
+            subjectAvgChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '平均分',
+                        data: data,
+                        backgroundColor: '#38B2AC',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            min: 0,
+                            suggestedMax: 100,
+                            ticks: {
+                                color: '#A0AEC0'
+                            },
+                            grid: {
+                                color: '#4A5568'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#A0AEC0'
+                            },
+                            grid: {
+                                color: '#4A5568'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 修改考试成绩
+        async function modifyExamScores(examName, subjectsJson) {
+            try {
+                // 处理可能的字符串或对象形式的subjects
+                let subjects;
+                if (typeof subjectsJson === 'string') {
+                    // 如果是字符串，尝试解析
+                    try {
+                        subjects = JSON.parse(subjectsJson);
+                    } catch (parseError) {
+                        // 如果有解析错误，尝试修复常见的引号问题
+                        try {
+                            subjects = JSON.parse(subjectsJson.replace(/&quot;/g, '"'));
+                        } catch {
+                            throw new Error('无法解析科目数据');
+                        }
+                    }
+                } else {
+                    // 如果已经是对象，直接使用
+                    subjects = subjectsJson;
+                }
+                
+                // 创建对话框让用户选择科目并输入新成绩
+                let subjectList = '';
+                let subjectsArray = [];
+                
+                for (const [subject, [currentScore, maxScore]] of Object.entries(subjects)) {
+                    if (subject !== 'total') {
+                        subjectsArray.push({name: subject, currentScore: currentScore, maxScore: maxScore});
+                        subjectList += `${subject}: ${currentScore}/${maxScore}\n`;
+                    }
+                }
+                
+                if (subjectsArray.length === 0) {
+                    alert('该考试没有有效的科目信息');
+                    return;
+                }
+                
+                // 显示当前成绩并询问是否修改
+                const continueEdit = confirm(`考试: ${examName}
+
+当前科目成绩:
+${subjectList}
+
+是否要修改成绩？`);
+                
+                if (!continueEdit) {
+                    return;
+                }
+                
+                // 让用户选择要修改的科目
+                let selectedSubject = prompt(`考试: ${examName}
+
+请选择要修改的科目:
+${subjectsArray.map((s, i) => `${i + 1}. ${s.name}`).join('\n')}
+
+请输入科目编号:`);
+                
+                if (!selectedSubject) return;
+                
+                const subjectIndex = parseInt(selectedSubject) - 1;
+                if (isNaN(subjectIndex) || subjectIndex < 0 || subjectIndex >= subjectsArray.length) {
+                    alert('无效的科目编号');
+                    return;
+                }
+                
+                const selectedSubjectObj = subjectsArray[subjectIndex];
+                
+                // 获取新成绩
+                let newScore = prompt(`修改 ${selectedSubjectObj.name} 成绩:\n当前成绩: ${selectedSubjectObj.currentScore}/${selectedSubjectObj.maxScore}\n\n请输入新成绩:`);
+                
+                if (!newScore) return;
+                
+                newScore = parseFloat(newScore);
+                if (isNaN(newScore) || newScore < 0 || newScore > selectedSubjectObj.maxScore) {
+                    alert(`成绩必须是0到${selectedSubjectObj.maxScore}之间的数字`);
+                    return;
+                }
+                
+                // 发送API请求更新成绩
+                const response = await fetch('/api/update-student-score', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        student_account: studentAccount,
+                        exam_name: examName,
+                        subject: selectedSubjectObj.name,
+                        new_score: newScore
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('成绩更新成功！');
+                    // 刷新页面以显示更新后的数据
+                    location.reload();
+                } else {
+                    alert('成绩更新失败: ' + result.message);
+                }
+            } catch (error) {
+                console.error('修改成绩时出错:', error);
+                alert('修改成绩时发生错误: ' + error.message);
+            }
+        }
+
+        // 打开修改成绩页面
+        function openModifyScorePage(examName, studentAccount) {
+            // 构建跳转URL
+            const url = `/modify-score?exam_name=${encodeURIComponent(examName)}&student_account=${encodeURIComponent(studentAccount)}`;
+            window.location.href = url;
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 这里可以添加其他事件监听器
+        }
+
+        // 导航函数
+        function goToClasses() {
+            window.location.href = '/classes';
+        }
+
+        function goToClassDetail() {
+            // 获取当前学生所在班级，然后跳转到班级详情
+            // 这里简化处理，直接跳转到班级列表
+            window.location.href = '/classes';
+        }
+
+        // 退出登录
+        function logout() {
+            if(confirm('确定要退出登录吗？')) {
+                // 调用后端退出API清理Redis会话和Cookie
+                fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('退出登录成功:', data.message);
+                        // 清除本地存储
+                        localStorage.removeItem('currentUser');
+                        // 跳转到主页
+                        window.location.href = '/learning-platform';
+                    } else {
+                        console.error('退出登录失败:', data.message);
+                        alert('退出登录失败: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('退出登录请求失败:', error);
+                    // 即使API调用失败，也清除本地数据并跳转
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '/learning-platform';
+                });
+            }
+        }
+
+        // 重新加载
+        function retryLoad() {
+            loadStudentDetail(studentAccount);
+        }
+    </script>
+</body>
+</html>

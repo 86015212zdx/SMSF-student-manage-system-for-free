@@ -1,0 +1,44 @@
+        /* 英语专区响应式设计 */
+        @media (max-width: 1024px) {
+            .english-zone-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .english-sidebar {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 16px;
+                border-right: none;
+                border-bottom: 1px solid #4A5568;
+            }
+            
+            .english-nav-item {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+                margin-bottom: 0;
+                margin-right: 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .english-sidebar {
+                flex-direction: column;
+            }
+            
+            .english-nav-item {
+                min-width: unset;
+                justify-content: flex-start;
+                margin-right: 0;
+            }
+            
+            .library-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .english-main-content {
+                padding: 16px;
+            }
+        }

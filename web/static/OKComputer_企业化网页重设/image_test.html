@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片加载测试</title>
+    <style>
+        body {
+            background: #1A202C;
+            color: #E2E8F0;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-image {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border: 2px solid #38B2AC;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        .success {
+            background: rgba(72, 187, 120, 0.2);
+            border: 1px solid #48BB78;
+            color: #48BB78;
+        }
+        .error {
+            background: rgba(245, 101, 101, 0.2);
+            border: 1px solid #F56565;
+            color: #F56565;
+        }
+        .info {
+            background: rgba(56, 178, 172, 0.2);
+            border: 1px solid #38B2AC;
+            color: #38B2AC;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>图片加载测试</h1>
+        
+        <div class="test-result info">
+            <strong>测试时间:</strong> <span id="testTime"></span><br>
+            <strong>当前URL:</strong> <span id="currentUrl"></span>
+        </div>
+        
+        <h2>测试图片 1: The shape of time.jpg</h2>
+        <img id="testImage1" class="test-image" src="/static/article_covers/The%20shape%20of%20time.jpg" alt="测试图片1" onerror="handleImageError(this, 'testImage1')" onload="handleImageLoad(this, 'testImage1')">
+        <div id="result1" class="test-result"></div>
+        
+        <h2>测试图片 2: Can you rewire your brain_.jpg</h2>
+        <img id="testImage2" class="test-image" src="/static/article_covers/Can%20you%20rewire%20your%20brain_.jpg" alt="测试图片2" onerror="handleImageError(this, 'testImage2')" onload="handleImageLoad(this, 'testImage2')">
+        <div id="result2" class="test-result"></div>
+        
+        <h2>测试图片 3: Compost modernity!.jpg</h2>
+        <img id="testImage3" class="test-image" src="/static/article_covers/Compost%20modernity!.jpg" alt="测试图片3" onerror="handleImageError(this, 'testImage3')" onload="handleImageLoad(this, 'testImage3')">
+        <div id="result3" class="test-result"></div>
+        
+        <button onclick="reloadImages()" style="padding: 10px 20px; background: #38B2AC; color: #1A202C; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px;">
+            重新加载所有图片
+        </button>
+    </div>
+
+    <script>
+        // 初始化页面信息
+        document.getElementById('testTime').textContent = new Date().toLocaleString();
+        document.getElementById('currentUrl').textContent = window.location.href;
+        
+        // 图片加载成功回调
+        function handleImageLoad(img, resultId) {
+            const resultDiv = document.getElementById(resultId);
+            resultDiv.className = 'test-result success';
+            resultDiv.innerHTML = `
+                <strong>✅ 图片加载成功</strong><br>
+                图片尺寸: ${img.naturalWidth} × ${img.naturalHeight}<br>
+                完整URL: ${img.src}<br>
+                状态: 已加载
+            `;
+        }
+        
+        // 图片加载失败回调
+        function handleImageError(img, resultId) {
+            const resultDiv = document.getElementById(resultId);
+            resultDiv.className = 'test-result error';
+            resultDiv.innerHTML = `
+                <strong>❌ 图片加载失败</strong><br>
+                尝试的URL: ${img.src}<br>
+                错误信息: 无法加载图片<br>
+                状态: 加载失败
+            `;
+        }
+        
+        // 重新加载所有图片
+        function reloadImages() {
+            // 清空结果
+            document.querySelectorAll('.test-result[id^="result"]').forEach(el => {
+                el.className = 'test-result info';
+                el.innerHTML = '<strong>🔄 正在重新加载...</strong>';
+            });
+            
+            // 重新加载图片
+            document.querySelectorAll('img').forEach(img => {
+                // 添加时间戳防止缓存
+                const url = new URL(img.src);
+                url.searchParams.set('t', Date.now());
+                img.src = url.toString();
+            });
+        }
+        
+        // 页面加载完成后检查图片状态
+        window.addEventListener('load', function() {
+            console.log('页面加载完成，检查图片状态...');
+            document.querySelectorAll('img').forEach((img, index) => {
+                setTimeout(() => {
+                    if (img.complete) {
+                        if (img.naturalWidth > 0) {
+                            handleImageLoad(img, `result${index + 1}`);
+                        } else {
+                            handleImageError(img, `result${index + 1}`);
+                        }
+                    }
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

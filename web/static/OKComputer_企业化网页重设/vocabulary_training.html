@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单词训练中心 - SMSF 英语学习平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="/static/OKComputer_企业化网页重设/utils.js"></script>
+    <link rel="stylesheet" href="/static/zt/fonts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', 'Quattrocento Sans', sans-serif;
+        }
+
+        body {
+            background: #1A202C;
+            color: #E2E8F0;
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏 */
+        nav {
+            background: #2D3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4A5568;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .nav-back {
+            background: #4A5568;
+            color: #A0AEC0;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-back:hover {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #E2E8F0;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A202C;
+            font-weight: 700;
+        }
+
+        /* 主要内容区域 */
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Chiron Hei HK', sans-serif;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #A0AEC0;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* 训练模块网格 */
+        .training-modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .module-card {
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #4A5568;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: #38B2AC;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #38B2AC, #4FD1C7);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .module-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .module-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #38B2AC 0%, #4FD1C7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .module-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #E2E8F0;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .module-description {
+            color: #A0AEC0;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .module-stats {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+            background: rgba(56, 178, 172, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #38B2AC;
+        }
+
+        .start-button {
+            background: #38B2AC;
+            color: #1A202C;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .start-button:hover {
+            background: #4FD1C7;
+            transform: translateY(-2px);
+        }
+
+        /* 生词学习模块样式 */
+        .learning-module {
+            display: none;
+            background: #2D3748;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid #4A5568;
+        }
+
+        .learning-module.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #4A5568;
+        }
+
+        .module-header h2 {
+            font-size: 1.8rem;
+            color: #E2E8F0;
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+
+        .close-button {
+            background: #4A5568;
+            color: #A0AEC0;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover {
+            background: #E53E3E;
+            color: #FFFFFF;
+        }
+
+        /* 单词卡片样式 */
+        .word-card {
+            background: #1A202C;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border: 1px solid #4A5568;
+        }
+
+        .word-display {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #38B2AC;
+            margin-bottom: 1rem;
+            font-family: 'Academica Book', sans-serif;
+        }
+
+        .phonetic {
+            font-size: 1.2rem;
+            color: #A0AEC0;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .definition {
+            font-size: 1.1rem;
+            color: #E2E8F0;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            background: rgba(56, 178, 172, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .word-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .control-button {
+            background: #4A5568;
+            color: #E2E8F0;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .control-button:hover {
+            background: #38B2AC;
+            color: #1A202C;
+            transform: translateY(-2px);
+        }
+
+        .control-button.primary {
+            background: #38B2AC;
+            color: #1A202C;
+        }
+
+        .control-button.primary:hover {
+            background: #4FD1C7;
+        }
+
+        /* 进度条样式 */
+        .progress-container {
+            margin: 2rem 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #A0AEC0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #4A5568;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38B2AC 0%, #4FD1C7 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 0 1rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .training-modules {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .module-card {
+                padding: 1.5rem;
+            }
+            
+            .word-display {
+                font-size: 2.5rem;
+            }
+            
+            .word-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-button {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .logo-text {
+                font-size: 1.5rem;
+            }
+            
+            .page-title {
+                font-size: 1.8rem;
+            }
+            
+            .module-card {
+                padding: 1.2rem;
+            }
+            
+            .word-display {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav>
+        <div class="logo-section">
+            <img src="resource_web/logo_64.png" alt="SMSF Logo" class="logo-icon">
+            <div class="logo-text">SMSF 单词训练</div>
+        </div>
+        
+        <button class="nav-back" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+            返回学习中心
+        </button>
+        
+        <div class="user-info">
+            <div class="user-name" id="userName">张同学</div>
+            <div class="user-avatar" id="userAvatar">张</div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">单词训练中心</h1>
+            <p class="page-subtitle">通过多种趣味训练模式，全面提升您的英语词汇量和运用能力</p>
+        </div>
+
+        <!-- 训练模块选择 -->
+        <div class="training-modules" id="trainingModules">
+            <!-- 生词学习 -->
+            <div class="module-card" onclick="startModule('newWords')">
+                <div class="module-icon">📖</div>
+                <h3 class="module-title">生词学习</h3>
+                <p class="module-description">系统学习生词本中的单词，掌握发音、释义和用法</p>
+                <div class="module-stats">
+                    <span class="stat-item">词汇量: 156</span>
+                    <span class="stat-item">掌握率: 68%</span>
+                </div>
+                <button class="start-button">
+                    <i class="fas fa-play"></i>
+                    开始学习
+                </button>
+            </div>
+
+            <!-- 词书背诵 -->
+            <div class="module-card" onclick="startModule('wordBook')">
+                <div class="module-icon">📚</div>
+                <h3 class="module-title">词书背诵</h3>
+                <p class="module-description">按词书分类系统背诵，涵盖四六级、托福雅思等考试词汇</p>
+                <div class="module-stats">
+                    <span class="stat-item">词书: 12本</span>
+                    <span class="stat-item">进度: 45%</span>
+                </div>
+                <button class="start-button">
+                    <i class="fas fa-book-open"></i>
+                    开始背诵
+                </button>
+            </div>
+
+            <!-- 拼写漫游 -->
+            <div class="module-card" onclick="startSpellingTraining()">
+                <div class="module-icon">✏️</div>
+                <h3 class="module-title">拼写漫游</h3>
+                <p class="module-description">通过趣味拼写游戏，巩固单词记忆，提升拼写准确率</p>
+                <div class="module-stats">
+                    <span class="stat-item">关卡: 24</span>
+                    <span class="stat-item">正确率: 82%</span>
+                </div>
+                <button class="start-button">
+                    <i class="fas fa-puzzle-piece"></i>
+                    开始挑战
+                </button>
+            </div>
+
+            <!-- 单词PK -->
+            <div class="module-card" onclick="startModule('wordPK')">
+                <div class="module-icon">⚔️</div>
+                <h3 class="module-title">单词PK</h3>
+                <p class="module-description">与好友或AI对战，在竞技中快速提升词汇量</p>
+                <div class="module-stats">
+                    <span class="stat-item">胜率: 75%</span>
+                    <span class="stat-item">排名: 12</span>
+                </div>
+                <button class="start-button">
+                    <i class="fas fa-fighter-jet"></i>
+                    开始对战
+                </button>
+            </div>
+        </div>
+
+        <!-- 生词学习模块 -->
+        <div class="learning-module" id="newWordsModule">
+            <div class="module-header">
+                <h2>📖 生词学习</h2>
+                <button class="close-button" onclick="closeModule()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>学习进度</span>
+                    <span id="progressText">1/20</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <div class="word-card">
+                <div class="word-display" id="currentWord">Loading...</div>
+                <div class="phonetic" id="phonetic">加载中...</div>
+                <div class="definition" id="definition">正在获取单词信息...</div>
+                
+                <div class="word-controls">
+                    <button class="control-button" onclick="playPronunciation()">
+                        <i class="fas fa-volume-up"></i>
+                        发音
+                    </button>
+                    <button class="control-button" onclick="showHint()">
+                        <i class="fas fa-lightbulb"></i>
+                        提示
+                    </button>
+                    <button class="control-button primary" onclick="nextWord()">
+                        <i class="fas fa-arrow-right"></i>
+                        下一个
+                    </button>
+                    <button class="control-button" onclick="addToVocabulary()">
+                        <i class="fas fa-plus"></i>
+                        加入生词本
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 词书背诵模块 -->
+        <div class="learning-module" id="wordBookModule">
+            <div class="module-header">
+                <h2>📚 词书背诵</h2>
+                <button class="close-button" onclick="closeModule()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>背诵进度</span>
+                    <span id="bookProgressText">0/50</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="bookProgressFill"></div>
+                </div>
+            </div>
+
+            <div class="word-card">
+                <div class="word-display" id="bookWord">请选择词书开始背诵</div>
+                <div class="phonetic" id="bookPhonetic"></div>
+                <div class="definition" id="bookDefinition"></div>
+                
+                <div class="word-controls">
+                    <button class="control-button" onclick="selectWordBook()">
+                        <i class="fas fa-book"></i>
+                        选择词书
+                    </button>
+                    <button class="control-button" onclick="previousBookWord()">
+                        <i class="fas fa-arrow-left"></i>
+                        上一个
+                    </button>
+                    <button class="control-button primary" onclick="nextBookWord()">
+                        <i class="fas fa-arrow-right"></i>
+                        下一个
+                    </button>
+                    <button class="control-button" onclick="markAsMastered()">
+                        <i class="fas fa-check"></i>
+                        标记掌握
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 拼写漫游模块 -->
+        <div class="learning-module" id="spellingModule">
+            <div class="module-header">
+                <h2>✏️ 拼写漫游</h2>
+                <button class="close-button" onclick="closeModule()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>关卡进度</span>
+                    <span id="spellingProgressText">关卡 1/24</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="spellingProgressFill"></div>
+                </div>
+            </div>
+
+            <div class="word-card">
+                <div class="definition" id="spellingHint">根据释义拼写出正确的单词</div>
+                
+                <div style="margin: 2rem 0;">
+                    <input type="text" 
+                           id="spellingInput" 
+                           placeholder="请输入单词..." 
+                           style="width: 100%; padding: 1rem; font-size: 1.2rem; text-align: center; background: #2D3748; border: 2px solid #4A5568; border-radius: 8px; color: #E2E8F0;">
+                </div>
+                
+                <div class="word-controls">
+                    <button class="control-button" onclick="checkSpelling()">
+                        <i class="fas fa-check"></i>
+                        检查答案
+                    </button>
+                    <button class="control-button" onclick="showAnswer()">
+                        <i class="fas fa-eye"></i>
+                        查看答案
+                    </button>
+                    <button class="control-button primary" onclick="nextSpellingChallenge()">
+                        <i class="fas fa-arrow-right"></i>
+                        下一关
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 单词PK模块 -->
+        <div class="learning-module" id="wordPKModule">
+            <div class="module-header">
+                <h2>⚔️ 单词PK</h2>
+                <button class="close-button" onclick="closeModule()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div style="display: flex; justify-content: space-around; margin-bottom: 2rem; text-align: center;">
+                <div>
+                    <div style="font-size: 1.2rem; color: #38B2AC; font-weight: 600;">您</div>
+                    <div style="font-size: 2rem; font-weight: 700;" id="playerScore">0</div>
+                </div>
+                <div style="font-size: 1.5rem; color: #A0AEC0; display: flex; align-items: center;">VS</div>
+                <div>
+                    <div style="font-size: 1.2rem; color: #E53E3E; font-weight: 600;">对手</div>
+                    <div style="font-size: 2rem; font-weight: 700;" id="opponentScore">0</div>
+                </div>
+            </div>
+
+            <div class="word-card">
+                <div class="definition" id="pkQuestion">准备好了吗？点击开始对战！</div>
+                
+                <div style="margin: 2rem 0;">
+                    <input type="text" 
+                           id="pkInput" 
+                           placeholder="快速输入答案..." 
+                           style="width: 100%; padding: 1rem; font-size: 1.2rem; text-align: center; background: #2D3748; border: 2px solid #4A5568; border-radius: 8px; color: #E2E8F0;">
+                </div>
+                
+                <div class="word-controls">
+                    <button class="control-button" onclick="startPK()">
+                        <i class="fas fa-play"></i>
+                        开始对战
+                    </button>
+                    <button class="control-button" onclick="skipPKWord()">
+                        <i class="fas fa-forward"></i>
+                        跳过
+                    </button>
+                    <button class="control-button primary" onclick="submitPKAnswer()">
+                        <i class="fas fa-bolt"></i>
+                        提交答案
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentUser = null;
+        let currentModule = null;
+        let currentWordIndex = 0;
+        let wordList = [];
+        let masteredWords = [];
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            initializeModules();
+        });
+
+        // 加载用户数据
+        async function loadUserData() {
+            try {
+                const response = await fetch('/api/student-info');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const studentData = result.student;
+                    currentUser = {
+                        name: studentData.name,
+                        account: studentData.account
+                    };
+                    updateUserDisplay();
+                }
+            } catch (error) {
+                console.error('加载用户数据失败:', error);
+                // 使用默认数据
+                currentUser = {
+                    name: '张同学',
+                    account: 'default_user'
+                };
+                updateUserDisplay();
+            }
+        }
+
+        // 更新用户显示
+        function updateUserDisplay() {
+            if (!currentUser) return;
+            
+            const userNameElement = document.getElementById('userName');
+            const userAvatarElement = document.getElementById('userAvatar');
+            
+            if (userNameElement) {
+                userNameElement.textContent = currentUser.name;
+            }
+            
+            if (userAvatarElement) {
+                userAvatarElement.textContent = currentUser.name.charAt(0);
+            }
+        }
+
+        // 初始化模块
+        function initializeModules() {
+            // 为每个模块添加键盘事件支持
+            document.addEventListener('keydown', function(e) {
+                if (currentModule) {
+                    switch(e.key) {
+                        case 'Enter':
+                            if (currentModule === 'newWords') nextWord();
+                            else if (currentModule === 'wordBook') nextBookWord();
+                            else if (currentModule === 'spelling') checkSpelling();
+                            else if (currentModule === 'wordPK') submitPKAnswer();
+                            break;
+                        case ' ':
+                            e.preventDefault();
+                            playPronunciation();
+                            break;
+                    }
+                }
+            });
+        }
+
+        // 开始训练模块
+        function startModule(moduleType) {
+            if (moduleType === 'newWords') {
+                // 生词学习模块路由到新的智能学习页面
+                window.location.href = '/static/OKComputer_企业化网页重设/new_vocabulary_learning.html';
+                return;
+            }
+            
+            currentModule = moduleType;
+            
+            // 隐藏所有模块
+            document.querySelectorAll('.learning-module').forEach(module => {
+                module.classList.remove('active');
+            });
+            
+            // 隐藏主菜单
+            document.getElementById('trainingModules').style.display = 'none';
+            
+            // 显示对应模块
+            const moduleElement = document.getElementById(moduleType + 'Module');
+            if (moduleElement) {
+                moduleElement.classList.add('active');
+                loadModuleData(moduleType);
+            }
+        }
+
+        // 启动拼写训练（跳转到专用页面）
+        function startSpellingTraining() {
+            window.location.href = '/static/OKComputer_企业化网页重设/spelling_training.html';
+        }
+
+        // 关闭模块
+        function closeModule() {
+            currentModule = null;
+            
+            // 隐藏所有模块
+            document.querySelectorAll('.learning-module').forEach(module => {
+                module.classList.remove('active');
+            });
+            
+            // 显示主菜单
+            document.getElementById('trainingModules').style.display = 'grid';
+        }
+
+        // 加载模块数据
+        async function loadModuleData(moduleType) {
+            try {
+                let apiUrl;
+                switch(moduleType) {
+                    case 'newWords':
+                        apiUrl = '/api/vocabulary/new-words';
+                        break;
+                    case 'wordBook':
+                        apiUrl = '/api/vocabulary/word-books';
+                        break;
+                    case 'spelling':
+                        apiUrl = '/api/vocabulary/spelling-challenges';
+                        break;
+                    case 'wordPK':
+                        apiUrl = '/api/vocabulary/pk-words';
+                        break;
+                }
+                
+                const response = await fetch(apiUrl);
+                const result = await response.json();
+                
+                if (result.success) {
+                    wordList = result.words || [];
+                    currentWordIndex = 0;
+                    displayCurrentWord();
+                    updateProgress();
+                }
+            } catch (error) {
+                console.error('加载模块数据失败:', error);
+                alert('加载数据失败，请稍后重试');
+            }
+        }
+
+        // 显示当前单词
+        function displayCurrentWord() {
+            if (wordList.length === 0) return;
+            
+            const word = wordList[currentWordIndex];
+            if (!word) return;
+            
+            switch(currentModule) {
+                case 'newWords':
+                    document.getElementById('currentWord').textContent = word.word;
+                    document.getElementById('phonetic').textContent = word.phonetic || '暂无音标';
+                    document.getElementById('definition').textContent = word.translation || '暂无释义';
+                    break;
+                case 'wordBook':
+                    document.getElementById('bookWord').textContent = word.word;
+                    document.getElementById('bookPhonetic').textContent = word.phonetic || '暂无音标';
+                    document.getElementById('bookDefinition').textContent = word.translation || '暂无释义';
+                    break;
+                case 'spelling':
+                    document.getElementById('spellingHint').textContent = word.translation || '根据释义拼写单词';
+                    document.getElementById('spellingInput').value = '';
+                    break;
+                case 'wordPK':
+                    document.getElementById('pkQuestion').textContent = word.translation || '快速拼写单词';
+                    document.getElementById('pkInput').value = '';
+                    break;
+            }
+        }
+
+        // 更新进度条
+        function updateProgress() {
+            if (wordList.length === 0) return;
+            
+            const progress = ((currentWordIndex + 1) / wordList.length) * 100;
+            
+            switch(currentModule) {
+                case 'newWords':
+                    document.getElementById('progressText').textContent = `${currentWordIndex + 1}/${wordList.length}`;
+                    document.getElementById('progressFill').style.width = `${progress}%`;
+                    break;
+                case 'wordBook':
+                    document.getElementById('bookProgressText').textContent = `${currentWordIndex + 1}/${wordList.length}`;
+                    document.getElementById('bookProgressFill').style.width = `${progress}%`;
+                    break;
+                case 'spelling':
+                    document.getElementById('spellingProgressText').textContent = `关卡 ${currentWordIndex + 1}/24`;
+                    document.getElementById('spellingProgressFill').style.width = `${progress}%`;
+                    break;
+            }
+        }
+
+        // 播放发音
+        function playPronunciation() {
+            const word = wordList[currentWordIndex]?.word;
+            if (word) {
+                // 这里可以集成语音合成API
+                alert(`播放发音: ${word}`);
+            }
+        }
+
+        // 显示提示
+        function showHint() {
+            const word = wordList[currentWordIndex];
+            if (word) {
+                alert(`提示：这个词的意思是 "${word.translation}"`);
+            }
+        }
+
+        // 下一个单词
+        function nextWord() {
+            if (currentWordIndex < wordList.length - 1) {
+                currentWordIndex++;
+                displayCurrentWord();
+                updateProgress();
+            } else {
+                alert('已完成本轮学习！');
+                closeModule();
+            }
+        }
+
+        // 加入生词本
+        async function addToVocabulary() {
+            const word = wordList[currentWordIndex];
+            if (word && word.id) {
+                try {
+                    const response = await fetch('/api/vocabulary/add-to-book', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            word_id: word.id,
+                            account: currentUser.account
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('已加入生词本！');
+                    }
+                } catch (error) {
+                    console.error('添加生词失败:', error);
+                    alert('添加失败，请稍后重试');
+                }
+            }
+        }
+
+        // 词书相关函数
+        function selectWordBook() {
+            alert('词书选择功能开发中...');
+        }
+
+        function previousBookWord() {
+            if (currentWordIndex > 0) {
+                currentWordIndex--;
+                displayCurrentWord();
+                updateProgress();
+            }
+        }
+
+        function nextBookWord() {
+            if (currentWordIndex < wordList.length - 1) {
+                currentWordIndex++;
+                displayCurrentWord();
+                updateProgress();
+            } else {
+                alert('已完成本轮背诵！');
+                closeModule();
+            }
+        }
+
+        function markAsMastered() {
+            masteredWords.push(wordList[currentWordIndex]);
+            nextBookWord();
+        }
+
+        // 拼写漫游相关函数
+        function checkSpelling() {
+            const userInput = document.getElementById('spellingInput').value.trim().toLowerCase();
+            const correctWord = wordList[currentWordIndex]?.word.toLowerCase();
+            
+            if (userInput === correctWord) {
+                alert('🎉 答案正确！');
+                nextSpellingChallenge();
+            } else {
+                alert(`❌ 答案错误，正确答案是: ${wordList[currentWordIndex]?.word}`);
+            }
+        }
+
+        function showAnswer() {
+            alert(`正确答案是: ${wordList[currentWordIndex]?.word}`);
+        }
+
+        function nextSpellingChallenge() {
+            if (currentWordIndex < wordList.length - 1) {
+                currentWordIndex++;
+                displayCurrentWord();
+                updateProgress();
+            } else {
+                alert('恭喜完成所有拼写挑战！');
+                closeModule();
+            }
+        }
+
+        // 单词PK相关函数
+        function startPK() {
+            document.getElementById('playerScore').textContent = '0';
+            document.getElementById('opponentScore').textContent = '0';
+            currentWordIndex = 0;
+            displayCurrentWord();
+        }
+
+        function skipPKWord() {
+            // 对手得分
+            const opponentScore = parseInt(document.getElementById('opponentScore').textContent);
+            document.getElementById('opponentScore').textContent = opponentScore + 10;
+            loadNextPKWord();
+        }
+
+        function submitPKAnswer() {
+            const userInput = document.getElementById('pkInput').value.trim().toLowerCase();
+            const correctWord = wordList[currentWordIndex]?.word.toLowerCase();
+            
+            if (userInput === correctWord) {
+                // 玩家得分
+                const playerScore = parseInt(document.getElementById('playerScore').textContent);
+                document.getElementById('playerScore').textContent = playerScore + 10;
+                alert('🎉 答对了！');
+            } else {
+                // 对手得分
+                const opponentScore = parseInt(document.getElementById('opponentScore').textContent);
+                document.getElementById('opponentScore').textContent = opponentScore + 10;
+                alert(`❌ 答错了，正确答案是: ${wordList[currentWordIndex]?.word}`);
+            }
+            
+            loadNextPKWord();
+        }
+
+        function loadNextPKWord() {
+            if (currentWordIndex < wordList.length - 1) {
+                currentWordIndex++;
+                displayCurrentWord();
+                document.getElementById('pkInput').value = '';
+            } else {
+                // 结束对战
+                const playerScore = parseInt(document.getElementById('playerScore').textContent);
+                const opponentScore = parseInt(document.getElementById('opponentScore').textContent);
+                
+                if (playerScore > opponentScore) {
+                    alert(`🏆 恭喜获胜！最终比分 ${playerScore}:${opponentScore}`);
+                } else if (playerScore < opponentScore) {
+                    alert(`😅 很遗憾输了，最终比分 ${playerScore}:${opponentScore}`);
+                } else {
+                    alert(`🤝 平局！最终比分 ${playerScore}:${opponentScore}`);
+                }
+                
+                closeModule();
+            }
+        }
+
+        // 返回学习中心
+        function goBack() {
+            window.location.href = '/static/OKComputer_企业化网页重设/student_learning.html';
+        }
+    </script>
+</body>
+</html>
